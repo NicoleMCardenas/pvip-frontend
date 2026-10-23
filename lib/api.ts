@@ -1,25 +1,42 @@
-const API_URL = "http://127.0.0.1:8000";
 
-const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NDk5NWYxMi00NDA0LTQ2ZmMtOGYwZS05YTczMGRiMjQ3MGQiLCJlbWFpbCI6Im5pY29sZUBnbG93d2VsbG5lc3MuY29tIiwicm9sZSI6Im93bmVyIiwiZXhwIjoxNzgxMDU0MjI4fQ.MIXXQNJYK9F1SqxTjc3SJ2uZZnc3CQmf817lil4U-Us";
+import "server-only";
+
+import { cookies } from "next/headers";
+
+const API_URL =
+  process.env.API_URL ?? "http://127.0.0.1:8000";
 
 export async function apiFetch(
   endpoint: string,
   options?: RequestInit
 ) {
-  const response = await fetch(
-    `${API_URL}${endpoint}`,
-    {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${TOKEN}`,
-        ...(options?.headers || {})
-      }
-    }
-  );
+  const cookieStore = await cookies();
+  const token = cookieStore.get("kairo_session")?.value;
+
+  if (!token) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options?.headers || {}),
+    },
+    cache: "no-store",
+  });
+
+  if (response.status === 401) {
+    throw new Error("UNAUTHENTICATED");
+  }
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    throw new Error(`API request failed: ${response.status}`);
+  }
+
+  if (response.status === 204) {
+    return null;
   }
 
   return response.json();
