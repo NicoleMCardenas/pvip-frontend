@@ -2,22 +2,37 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 const validStatuses = ["new", "active", "at_risk"];
 
 export function CustomerFilters() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-
   const currentSearch = searchParams.get("search") ?? "";
-  const currentStatus = searchParams.get("status") ?? "";
 
+  return (
+    <CustomerFiltersContent
+      key={currentSearch}
+      currentSearch={currentSearch}
+      currentStatus={searchParams.get("status") ?? ""}
+      searchParamsString={searchParams.toString()}
+    />
+  );
+}
+
+type CustomerFiltersContentProps = {
+  currentSearch: string;
+  currentStatus: string;
+  searchParamsString: string;
+};
+
+function CustomerFiltersContent({
+  currentSearch,
+  currentStatus,
+  searchParamsString,
+}: CustomerFiltersContentProps) {
+  const router = useRouter();
   const [search, setSearch] = useState(currentSearch);
-
-  useEffect(() => {
-    setSearch(currentSearch);
-  }, [currentSearch]);
 
   const status = validStatuses.includes(currentStatus)
     ? currentStatus
@@ -35,7 +50,7 @@ export function CustomerFilters() {
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParamsString);
     const value = search.trim();
 
     if (value) {
@@ -48,7 +63,7 @@ export function CustomerFilters() {
   }
 
   function handleStatusChange(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParamsString);
 
     if (value === "all") {
       params.delete("status");

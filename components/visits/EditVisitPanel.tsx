@@ -44,7 +44,6 @@ export function EditVisitPanel({
   staff,
 }: EditVisitPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
 
@@ -58,22 +57,19 @@ export function EditVisitPanel({
 
   function updateDirty(dirty: boolean) {
     isDirtyRef.current = dirty;
-    setIsDirty(dirty);
   }
 
   const finishClosing = useCallback(() => {
-    isDirtyRef.current = false;
-    confirmationRef.current = false;
+  isDirtyRef.current = false;
+  confirmationRef.current = false;
 
-    setIsDirty(false);
-    setShowDiscardConfirmation(false);
-    setIsOpen(false);
+  setShowDiscardConfirmation(false);
+  setIsOpen(false);
 
-    requestAnimationFrame(() => {
-      triggerRef.current?.focus();
-    });
-  }, []);
-
+  requestAnimationFrame(() => {
+    triggerRef.current?.focus();
+  });
+}, []);
   const requestClose = useCallback(() => {
     if (isDirtyRef.current) {
       confirmationRef.current = true;

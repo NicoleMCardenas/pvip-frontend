@@ -72,7 +72,9 @@ export function RestoreCustomer({
 
   // Keep keyboard handling synchronized without
   // recreating the dialog effect during requests.
+  useEffect(() => {
   isBusyRef.current = isBusy;
+  }, [isBusy]);
 
   function markOutcomeUnknown(message: string) {
     try {
@@ -135,10 +137,11 @@ export function RestoreCustomer({
   }
 
   useEffect(() => {
-    if (!isOpen) return;
+  if (!isOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
-    const previousFocus = document.activeElement;
+  const previousOverflow = document.body.style.overflow;
+  const previousFocus = document.activeElement;
+  const triggerElement = triggerRef.current;
 
     document.body.style.overflow = "hidden";
     cancelRef.current?.focus();
@@ -209,7 +212,7 @@ export function RestoreCustomer({
       ) {
         previousFocus.focus();
       } else {
-        triggerRef.current?.focus();
+        triggerElement?.focus();
       }
     };
   }, [isOpen]);

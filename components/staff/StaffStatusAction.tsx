@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserRoundCheck, UserRoundX, X } from "lucide-react";
 
@@ -25,19 +25,20 @@ export function StaffStatusAction({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const loadingRef = useRef(false);
 
   const isActive = staffMember.status === "active";
 
-  function closeDialog() {
-    if (loading) return;
+  const closeDialog = useCallback(() => {
+  if (loadingRef.current) return;
 
-    setIsOpen(false);
-    setError("");
+  setIsOpen(false);
+  setError("");
 
-    requestAnimationFrame(() => {
-      triggerRef.current?.focus();
-    });
-  }
+  requestAnimationFrame(() => {
+    triggerRef.current?.focus();
+  });
+}, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -49,14 +50,11 @@ export function StaffStatusAction({
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        event.preventDefault();
+    event.preventDefault();
+    closeDialog();
 
-        if (!loading) {
-          closeDialog();
-        }
-
-        return;
-      }
+    return;
+  }
 
       if (event.key !== "Tab") return;
 
@@ -98,14 +96,14 @@ export function StaffStatusAction({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, loading]);
+  }, [isOpen, closeDialog]);
 
   async function handleConfirm() {
-    if (loading) return;
+  if (loadingRef.current) return;
 
-    setLoading(true);
-    setError("");
-
+  loadingRef.current = true;
+  setLoading(true);
+  setError("");
     try {
       const response = await fetch(
         `/api/staff/${staffMember.id}`,
@@ -144,6 +142,7 @@ export function StaffStatusAction({
           : "An unexpected error occurred."
       );
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   }

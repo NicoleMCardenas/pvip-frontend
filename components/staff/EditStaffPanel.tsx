@@ -22,7 +22,6 @@ export function EditStaffPanel({
   staffMember,
 }: EditStaffPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [
     showDiscardConfirmation,
     setShowDiscardConfirmation,
@@ -37,15 +36,13 @@ export function EditStaffPanel({
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-    isDirtyRef.current = dirty;
-    setIsDirty(dirty);
-  }
+  isDirtyRef.current = dirty;
+ }
 
   function finishClosing() {
     isDirtyRef.current = false;
     confirmationRef.current = false;
 
-    setIsDirty(false);
     setShowDiscardConfirmation(false);
     setIsOpen(false);
 

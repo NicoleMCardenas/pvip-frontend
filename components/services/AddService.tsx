@@ -12,7 +12,6 @@ import { ServiceForm } from "./ServiceForm";
 
 export function AddService() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
 
@@ -25,15 +24,13 @@ export function AddService() {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-    isDirtyRef.current = dirty;
-    setIsDirty(dirty);
+  isDirtyRef.current = dirty;
   }
 
   const finishClosing = useCallback(() => {
     isDirtyRef.current = false;
     confirmationRef.current = false;
 
-    setIsDirty(false);
     setShowDiscardConfirmation(false);
     setIsOpen(false);
 

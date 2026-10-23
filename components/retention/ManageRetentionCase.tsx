@@ -33,18 +33,6 @@ type ManageRetentionCaseProps = {
   customerName: string;
 };
 
-const statusLabels: Record<RetentionCaseStatus, string> = {
-  pending: "Pending",
-  in_progress: "In progress",
-  resolved: "Resolved",
-};
-
-const priorityLabels: Record<RetentionCasePriority, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
-};
-
 const activityLabels: Record<RetentionActivityType, string> = {
   call: "Phone call",
   email: "Email",
@@ -132,8 +120,10 @@ export function ManageRetentionCase({
   const confirmationOpenRef = useRef(false);
   const requestCloseRef = useRef<() => void>(() => {});
 
+  useEffect(() => {
   dirtyRef.current = hasUnsavedChanges;
   busyRef.current = busy;
+  }, [hasUnsavedChanges, busy]);
 
   const closePanel = useCallback(() => {
     confirmationOpenRef.current = false;
@@ -162,7 +152,9 @@ export function ManageRetentionCase({
     closePanel();
   }, [closePanel]);
 
+  useEffect(() => {
   requestCloseRef.current = requestClose;
+  }, [requestClose]);
 
   const loadActivities = useCallback(async () => {
     setActivitiesLoading(true);
@@ -220,13 +212,8 @@ export function ManageRetentionCase({
     setActivitySuccess("");
     setActivities([]);
     setIsOpen(true);
-  }
-
-  useEffect(() => {
-    if (!isOpen) return;
-
     void loadActivities();
-  }, [isOpen, loadActivities]);
+  }
 
   useEffect(() => {
     if (!isOpen) return;

@@ -21,7 +21,6 @@ export function SurveyResponsePanel({
   customerName,
 }: SurveyResponsePanelProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
@@ -37,7 +36,6 @@ export function SurveyResponsePanel({
 
   function updateDirty(dirty: boolean) {
     isDirtyRef.current = dirty;
-    setIsDirty(dirty);
   }
 
   function updateSaving(saving: boolean) {
@@ -50,7 +48,6 @@ export function SurveyResponsePanel({
     isSavingRef.current = false;
     confirmationRef.current = false;
 
-    setIsDirty(false);
     setIsSaving(false);
     setShowDiscardConfirmation(false);
     setIsOpen(false);

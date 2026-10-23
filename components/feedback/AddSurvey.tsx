@@ -73,7 +73,6 @@ export function AddSurvey({
     (visit) => visit.id === visitId
   );
 
-  const isDirty = visitId !== "";
 
   function formatVisitDate(date: string) {
     return new Intl.DateTimeFormat("en-US", {

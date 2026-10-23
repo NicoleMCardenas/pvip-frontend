@@ -22,9 +22,11 @@ export function ArchiveCustomer({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const isArchivingRef = useRef(false);
 
   function closeDialog() {
-    if (isArchiving) return;
+    if (isArchivingRef.current) return;
+
     setIsOpen(false);
     setError("");
   }
@@ -33,13 +35,20 @@ export function ArchiveCustomer({
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+    const triggerElement = triggerRef.current;
+
     document.body.style.overflow = "hidden";
     cancelRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        closeDialog();
+
+        if (!isArchivingRef.current) {
+          setIsOpen(false);
+          setError("");
+        }
+
         return;
       }
 
@@ -84,13 +93,14 @@ export function ArchiveCustomer({
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
-      triggerRef.current?.focus();
+      triggerElement?.focus();
     };
-  }, [isOpen, isArchiving]);
+  }, [isOpen]);
 
   async function handleArchive() {
-    if (isArchiving) return;
+    if (isArchivingRef.current) return;
 
+    isArchivingRef.current = true;
     setIsArchiving(true);
     setError("");
 
@@ -121,6 +131,7 @@ export function ArchiveCustomer({
           : "An unexpected error occurred."
       );
     } finally {
+      isArchivingRef.current = false;
       setIsArchiving(false);
     }
   }

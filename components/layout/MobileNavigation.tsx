@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -8,21 +7,24 @@ import { Menu, X } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
 
 export default function MobileNavigation() {
-  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+
+  return <MobileNavigationContent key={pathname} />;
+}
+
+function MobileNavigationContent() {
+  const [isOpen, setIsOpen] = useState(false);
+
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const wasOpenRef = useRef(false);
-
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!isOpen) {
       if (wasOpenRef.current) {
         menuButtonRef.current?.focus();
       }
+
       wasOpenRef.current = false;
       return;
     }

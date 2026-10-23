@@ -185,7 +185,7 @@ export function SurveyResponseForm({
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
-          Capture the customer's experience following their visit.
+          Capture the customer&apos;s experience following their visit.
           You can record a partial response when some answers are
           unavailable.
         </p>

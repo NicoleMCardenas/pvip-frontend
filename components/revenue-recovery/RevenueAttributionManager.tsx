@@ -68,7 +68,9 @@ export function RevenueAttributionManager({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
+  const [eligibilityCheckedAt, setEligibilityCheckedAt] = useState<number | null>(
+  null
+  );
   const cancelRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -105,7 +107,8 @@ export function RevenueAttributionManager({
             visit.client_id === selectedCase.client_id &&
             Number(visit.amount) > 0 &&
             visitTime >= createdTime &&
-            visitTime <= Date.now() &&
+            eligibilityCheckedAt !== null &&
+            visitTime <= eligibilityCheckedAt &&
             (resolvedTime === null || visitTime <= resolvedTime) &&
             !attributedVisitIds.has(visit.id)
           );
@@ -264,6 +267,7 @@ export function RevenueAttributionManager({
                 onChange={(event) => {
                   setSelectedCaseId(event.target.value);
                   setSelectedVisitId("");
+                  setEligibilityCheckedAt(Date.now());
                   clearMessages();
                 }}
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-50"

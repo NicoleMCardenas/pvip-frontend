@@ -27,6 +27,9 @@ export function EditCustomerPanel({
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+    const triggerButton =
+      triggerRef.current?.querySelector("button");
+
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
@@ -73,9 +76,6 @@ export function EditCustomerPanel({
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
-
-      const triggerButton =
-        triggerRef.current?.querySelector("button");
 
       triggerButton?.focus();
     };

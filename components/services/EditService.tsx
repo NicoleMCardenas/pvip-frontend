@@ -17,7 +17,6 @@ type EditServiceProps = {
 
 export function EditService({ service }: EditServiceProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
 
@@ -30,15 +29,13 @@ export function EditService({ service }: EditServiceProps) {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-    isDirtyRef.current = dirty;
-    setIsDirty(dirty);
+  isDirtyRef.current = dirty;
   }
 
   const finishClosing = useCallback(() => {
     isDirtyRef.current = false;
     confirmationRef.current = false;
 
-    setIsDirty(false);
     setShowDiscardConfirmation(false);
     setIsOpen(false);
 

@@ -8,7 +8,6 @@ import { StaffForm } from "./StaffForm";
 
 export function AddStaff() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
 
@@ -20,22 +19,19 @@ export function AddStaff() {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-    isDirtyRef.current = dirty;
-    setIsDirty(dirty);
+  isDirtyRef.current = dirty;
   }
 
   function finishClosing() {
-    isDirtyRef.current = false;
-    confirmationRef.current = false;
-    setIsDirty(false);
-    setShowDiscardConfirmation(false);
-    setIsOpen(false);
+  isDirtyRef.current = false;
+  confirmationRef.current = false;
+  setShowDiscardConfirmation(false);
+  setIsOpen(false);
 
-    requestAnimationFrame(() => {
-      triggerRef.current?.focus();
-    });
-  }
-
+  requestAnimationFrame(() => {
+    triggerRef.current?.focus();
+  });
+}
   const requestClose = useCallback(() => {
     if (isDirtyRef.current) {
       confirmationRef.current = true;
