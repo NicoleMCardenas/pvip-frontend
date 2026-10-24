@@ -2,11 +2,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const registered = searchParams.get("registered") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,6 +16,8 @@ export default function LoginForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading) return;
+
     setError("");
     setLoading(true);
 
@@ -47,7 +51,7 @@ export default function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
       <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-white">
@@ -62,7 +66,15 @@ export default function LoginForm() {
         <h2 className="mb-6 text-xl font-semibold text-white">
           Iniciar sesión
         </h2>
-
+              {registered && (
+        <div
+          role="status"
+          className="mb-6 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4 text-sm text-emerald-300"
+        >
+          Tu cuenta se creó correctamente. Ya puedes iniciar sesión
+          con tu correo y contraseña.
+        </div>
+      )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
@@ -121,6 +133,19 @@ export default function LoginForm() {
             {loading ? "Iniciando sesión..." : "Iniciar sesión"}
           </button>
         </form>
+
+        <div className="mt-7 border-t border-slate-800 pt-6 text-center">
+          <p className="text-sm text-slate-400">
+            ¿Tu negocio todavía no tiene una cuenta?
+          </p>
+
+          <Link
+            href="/register"
+            className="mt-3 inline-flex font-semibold text-blue-400 transition hover:text-blue-300"
+          >
+            Crear cuenta para mi negocio
+          </Link>
+        </div>
       </div>
     </main>
   );

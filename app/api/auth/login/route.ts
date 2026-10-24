@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     result.cookies.set("kairo_session", data.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.COOKIE_SECURE === "true",
       sameSite: "lax",
       path: "/",
     });
