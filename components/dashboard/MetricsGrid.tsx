@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { DashboardMetrics } from "@/types";
 
 type MetricsGridProps = {
@@ -75,25 +79,27 @@ function formatNps(value: number | null | undefined) {
 }
 
 export function MetricsGrid({ metrics }: MetricsGridProps) {
+  const { t } = useLanguage();
+
   const satisfaction = formatSatisfaction(
-    metrics.average_satisfaction
+    metrics.average_satisfaction,
   );
 
   const nps = formatNps(metrics.nps_score);
 
   return (
-    <section aria-label="Customer intelligence metrics">
+    <section aria-label={t.dashboard.metricsSection}>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <MetricCard
-          label="Total Clients"
+          label={t.dashboard.totalCustomers}
           value={metrics.total_clients}
-          description="Customers in your portfolio, excluding archived records."
+          description={t.dashboard.totalCustomersDescription}
         />
 
         <MetricCard
-          label="At Risk Clients"
+          label={t.dashboard.atRiskCustomers}
           value={metrics.at_risk_clients}
-          description="Customers currently classified as at risk."
+          description={t.dashboard.atRiskCustomersDescription}
           valueColor={
             metrics.at_risk_clients > 0
               ? "text-amber-400"
@@ -102,16 +108,16 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         />
 
         <MetricCard
-          label="Average Satisfaction"
+          label={t.dashboard.averageSatisfaction}
           value={satisfaction}
           suffix="/ 5"
-          description="Average rating across completed surveys with valid satisfaction scores."
+          description={t.dashboard.averageSatisfactionDescription}
         />
 
         <MetricCard
-          label="NPS Score"
+          label={t.dashboard.npsScore}
           value={nps}
-          description="Net Promoter Score across completed surveys with valid NPS responses."
+          description={t.dashboard.npsDescription}
           valueColor={
             typeof metrics.nps_score === "number" &&
             metrics.nps_score < 0

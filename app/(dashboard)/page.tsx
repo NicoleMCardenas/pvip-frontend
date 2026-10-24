@@ -1,7 +1,6 @@
-import Link from "next/link";
+
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 
 import { apiFetch } from "@/lib/api";
 
@@ -15,6 +14,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { ClientsTable } from "@/components/dashboard/ClientsTable";
 import { RecoveryQueue } from "@/components/dashboard/RecoveryQueue";
+import { DashboardLinks } from "@/components/dashboard/DashboardLinks";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -67,27 +67,11 @@ export default async function Home() {
 
         <ClientsTable clients={clients} />
 
-        <div className="mt-4 flex justify-end">
-          <Link
-            href="/customers"
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-sky-400 transition-colors hover:bg-slate-900 hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-          >
-            View all customers
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
+        <DashboardLinks destination="customers" />
 
         <RecoveryQueue clients={recoveryQueue} />
 
-        <div className="mt-4 flex justify-end">
-          <Link
-            href="/retention"
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-sky-400 transition-colors hover:bg-slate-900 hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-          >
-            Open retention workspace
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
+        <DashboardLinks destination="retention" />
       </div>
     </main>
   );

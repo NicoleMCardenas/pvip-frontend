@@ -1,17 +1,25 @@
+
+"use client";
+
 import Link from "next/link";
-import type { RecoveryClient } from "@/types";
-import { StatusBadge } from "./StatusBadge";
 import {
   ArrowRight,
   CheckCircle2,
   HeartHandshake,
 } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+import { StatusBadge } from "@/components/dashboard/StatusBadge";
+
+import type { RecoveryClient } from "@/types";
+
 type RecoveryQueueProps = {
   clients: RecoveryClient[];
 };
 
-function formatSatisfaction(score: number | null | undefined) {
+function formatSatisfaction(
+  score: number | null | undefined,
+) {
   if (
     typeof score !== "number" ||
     !Number.isInteger(score) ||
@@ -37,20 +45,26 @@ function formatNps(score: number | null | undefined) {
   return `${score} / 10`;
 }
 
-export function RecoveryQueue({ clients }: RecoveryQueueProps) {
+export function RecoveryQueue({
+  clients,
+}: RecoveryQueueProps) {
+  const { t } = useLanguage();
+
   return (
-    <section className="mt-10" aria-labelledby="recovery-heading">
+    <section
+      className="mt-10"
+      aria-labelledby="recovery-heading"
+    >
       <div className="mb-5">
         <h2
           id="recovery-heading"
           className="text-xl font-semibold tracking-tight text-white sm:text-2xl"
         >
-          Recovery Queue
+          {t.recoveryQueue.title}
         </h2>
 
         <p className="mt-1 text-sm text-slate-400">
-          Review customers currently classified as at risk
-          and prioritize retention actions.
+          {t.recoveryQueue.description}
         </p>
       </div>
 
@@ -67,13 +81,11 @@ export function RecoveryQueue({ clients }: RecoveryQueueProps) {
 
           <div>
             <h3 className="text-base font-semibold text-white">
-              No customers currently flagged
+              {t.recoveryQueue.emptyTitle}
             </h3>
 
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-400">
-              No customers are currently classified as at risk.
-              Continue monitoring customer feedback and
-              satisfaction to identify potential issues early.
+              {t.recoveryQueue.emptyDescription}
             </p>
           </div>
         </div>
@@ -103,7 +115,7 @@ export function RecoveryQueue({ clients }: RecoveryQueueProps) {
               <div className="mt-5 grid grid-cols-2 gap-4 rounded-xl bg-slate-950/60 p-4">
                 <div>
                   <p className="text-xs text-slate-400">
-                    Latest NPS
+                    {t.recoveryQueue.latestNps}
                   </p>
 
                   <p className="mt-1 text-xl font-semibold tabular-nums text-white">
@@ -113,21 +125,19 @@ export function RecoveryQueue({ clients }: RecoveryQueueProps) {
 
                 <div>
                   <p className="text-xs text-slate-400">
-                    Latest Satisfaction
+                    {t.recoveryQueue.latestSatisfaction}
                   </p>
 
                   <p className="mt-1 text-xl font-semibold tabular-nums text-white">
                     {formatSatisfaction(
-                      client.latest_satisfaction
+                      client.latest_satisfaction,
                     )}
                   </p>
                 </div>
               </div>
 
               <p className="mt-3 text-xs leading-relaxed text-slate-500">
-                These scores reflect the latest completed survey
-                when available. A positive score does not
-                automatically change a customer&apos;s risk status.
+                {t.recoveryQueue.scoreNote}
               </p>
 
               <div className="mt-5 flex-1 border-t border-slate-800 pt-5">
@@ -138,7 +148,7 @@ export function RecoveryQueue({ clients }: RecoveryQueueProps) {
                     className="text-sky-400"
                     aria-hidden="true"
                   />
-                  Recommended action
+                  {t.recoveryQueue.recommendedAction}
                 </div>
 
                 <p className="mt-2 text-sm leading-relaxed text-slate-400">
@@ -149,12 +159,15 @@ export function RecoveryQueue({ clients }: RecoveryQueueProps) {
               <div className="mt-6 border-t border-slate-800 pt-4">
                 <Link
                   href={`/retention?customerId=${encodeURIComponent(
-                    client.client_id
+                    client.client_id,
                   )}`}
                   className="inline-flex items-center gap-2 rounded-xl border border-sky-800/60 bg-sky-950/30 px-4 py-3 text-sm font-semibold text-sky-300 transition-colors hover:border-sky-700 hover:bg-sky-950/60 hover:text-sky-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
                 >
-                  Manage retention
-                  <ArrowRight size={16} aria-hidden="true" />
+                  {t.recoveryQueue.manageRetention}
+                  <ArrowRight
+                    size={16}
+                    aria-hidden="true"
+                  />
                 </Link>
               </div>
             </article>

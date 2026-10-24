@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -16,60 +17,66 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+import type { Translations } from "@/lib/i18n";
+
+type NavigationKey = keyof Translations["navigation"];
+
 type NavigationItem = {
-  label: string;
+  labelKey: NavigationKey;
   href: string;
   icon: LucideIcon;
 };
 
 const navigation: NavigationItem[] = [
   {
-    label: "Overview",
+    labelKey: "overview",
     href: "/",
     icon: LayoutDashboard,
   },
   {
-    label: "Intelligence",
+    labelKey: "intelligence",
     href: "/intelligence",
     icon: ChartNoAxesCombined,
   },
   {
-    label: "Customers",
+    labelKey: "customers",
     href: "/customers",
     icon: Users,
   },
   {
-    label: "Staff",
+    labelKey: "staff",
     href: "/staff",
     icon: UserRoundCog,
   },
   {
-    label: "Services",
+    labelKey: "services",
     href: "/services",
     icon: BriefcaseBusiness,
   },
   {
-    label: "Visits",
+    labelKey: "visits",
     href: "/visits",
     icon: CalendarDays,
   },
   {
-    label: "Feedback",
+    labelKey: "feedback",
     href: "/feedback",
     icon: MessageSquareText,
   },
   {
-    label: "Retention",
+    labelKey: "retention",
     href: "/retention",
     icon: HeartHandshake,
   },
   {
-    label: "Revenue Recovery",
+    labelKey: "revenueRecovery",
     href: "/revenue-recovery",
     icon: CircleDollarSign,
   },
   {
-    label: "Settings",
+    labelKey: "settings",
     href: "/settings",
     icon: Settings2,
   },
@@ -77,6 +84,7 @@ const navigation: NavigationItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-950 px-4 py-6">
@@ -87,12 +95,15 @@ export default function Sidebar() {
           </span>
 
           <span className="mt-1 block text-xs tracking-wide text-slate-400">
-            CUSTOMER INTELLIGENCE
+            {t.navigation.brandSubtitle}
           </span>
         </Link>
       </div>
 
-      <nav aria-label="Main navigation" className="flex-1 space-y-1">
+      <nav
+        aria-label={t.navigation.mainNavigation}
+        className="min-h-0 flex-1 space-y-1 overflow-y-auto"
+      >
         {navigation.map((item) => {
           const Icon = item.icon;
 
@@ -120,20 +131,24 @@ export default function Sidebar() {
                 aria-hidden="true"
               />
 
-              <span>{item.label}</span>
+              <span>{t.navigation[item.labelKey]}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-slate-800 px-3 pt-5">
+      <div className="mt-4 space-y-4 border-t border-slate-800 px-3 pt-5">
+        <LanguageSwitcher />
+
+       <div>
         <p className="text-xs font-medium text-slate-300">
-          KAIRO Platform
+          {t.navigation.platformLabel}
         </p>
 
         <p className="mt-1 text-xs text-slate-500">
-          Customer experience & retention
+          {t.navigation.platformDescription}
         </p>
+      </div>
       </div>
     </aside>
   );
