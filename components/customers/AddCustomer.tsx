@@ -3,16 +3,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 import { CustomerForm } from "./CustomerForm";
 
 export function AddCustomer() {
+  const { t } = useLanguage();
+
   const [isOpen, setIsOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   function closePanel() {
     setIsOpen(false);
+
     requestAnimationFrame(() => {
       triggerRef.current?.focus();
     });
@@ -25,47 +29,45 @@ export function AddCustomer() {
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
-    
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    closePanel();
-    return;
-  }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        closePanel();
+        return;
+      }
 
-  if (event.key !== "Tab") return;
+      if (event.key !== "Tab") return;
 
-  const dialog = closeButtonRef.current?.closest(
-    '[role="dialog"]'
-  );
+      const dialog = closeButtonRef.current?.closest(
+        '[role="dialog"]'
+      );
 
-  if (!dialog) return;
+      if (!dialog) return;
 
-  const focusableElements = Array.from(
-    dialog.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]'
-    )
-  );
+      const focusableElements = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]'
+        )
+      );
 
-  if (focusableElements.length === 0) {
-    event.preventDefault();
-    return;
-  }
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
 
-  const first = focusableElements[0];
-  const last = focusableElements[focusableElements.length - 1];
-  const active = document.activeElement;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      const active = document.activeElement;
 
-  if (event.shiftKey) {
-    if (active === first || !dialog.contains(active)) {
-      event.preventDefault();
-      last.focus();
+      if (event.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !dialog.contains(active)) {
+        event.preventDefault();
+        first.focus();
+      }
     }
-  } else if (active === last || !dialog.contains(active)) {
-    event.preventDefault();
-    first.focus();
-  }
-}
-
 
     document.addEventListener("keydown", handleKeyDown);
 
@@ -84,7 +86,7 @@ function handleKeyDown(event: KeyboardEvent) {
         className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 sm:w-auto"
       >
         <Plus size={18} strokeWidth={2} />
-        Add customer
+        {t.customers.addCustomer}
       </button>
 
       {isOpen && (
@@ -104,14 +106,14 @@ function handleKeyDown(event: KeyboardEvent) {
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer management
+                  {t.customers.managementLabel}
                 </p>
 
                 <h2
                   id="add-customer-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  New customer
+                  {t.customers.newCustomer}
                 </h2>
               </div>
 
@@ -119,7 +121,7 @@ function handleKeyDown(event: KeyboardEvent) {
                 ref={closeButtonRef}
                 type="button"
                 onClick={closePanel}
-                aria-label="Close customer form"
+                aria-label={t.customers.closeCustomerForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
                 <X size={20} />

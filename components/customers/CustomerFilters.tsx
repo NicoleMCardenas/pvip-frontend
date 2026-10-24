@@ -3,6 +3,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 const validStatuses = ["new", "active", "at_risk"];
 
@@ -32,6 +33,7 @@ function CustomerFiltersContent({
   searchParamsString,
 }: CustomerFiltersContentProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [search, setSearch] = useState(currentSearch);
 
   const status = validStatuses.includes(currentStatus)
@@ -91,8 +93,8 @@ function CustomerFiltersContent({
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search customers by name..."
-            aria-label="Search customers"
+            placeholder={t.customers.searchPlaceholder}
+            aria-label={t.customers.searchCustomers}
             className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-500/20"
           />
 
@@ -100,7 +102,7 @@ function CustomerFiltersContent({
             type="submit"
             className="min-h-11 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
           >
-            Search
+            {t.customers.searchCustomers}
           </button>
         </form>
 
@@ -109,13 +111,13 @@ function CustomerFiltersContent({
           onChange={(event) =>
             handleStatusChange(event.target.value)
           }
-          aria-label="Filter customers by status"
+          aria-label={t.customers.filterByStatus}
           className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-500/20 sm:min-w-44"
         >
-          <option value="all">All statuses</option>
-          <option value="new">New</option>
-          <option value="active">Active</option>
-          <option value="at_risk">At risk</option>
+          <option value="all">{t.customers.allStatuses}</option>
+          <option value="new">{t.customers.new}</option>
+          <option value="active">{t.customers.active}</option>
+          <option value="at_risk">{t.customers.atRisk}</option>
         </select>
 
         {hasActiveFilters && (
@@ -124,7 +126,7 @@ function CustomerFiltersContent({
             onClick={handleClearFilters}
             className="min-h-11 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
           >
-            Clear filters
+            {t.customers.clearFilters}
           </button>
         )}
       </div>

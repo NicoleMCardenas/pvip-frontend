@@ -3,6 +3,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Client, ClientStatus } from "@/types";
 
 const editableStatuses: ClientStatus[] = [
@@ -23,17 +24,18 @@ export function CustomerForm({
   onSuccess,
 }: CustomerFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const isEditing = Boolean(customer);
 
   const [name, setName] = useState(customer?.name ?? "");
   const [email, setEmail] = useState(customer?.email ?? "");
   const [phone, setPhone] = useState(customer?.phone ?? "");
   const [status, setStatus] = useState<ClientStatus>(
-  customer?.status &&
-    editableStatuses.includes(customer.status as ClientStatus)
-    ? (customer.status as ClientStatus)
-    : "new"
-);
+    customer?.status &&
+      editableStatuses.includes(customer.status as ClientStatus)
+      ? (customer.status as ClientStatus)
+      : "new"
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,7 +44,7 @@ export function CustomerForm({
     event.preventDefault();
 
     if (!name.trim()) {
-      setError("Customer name is required.");
+      setError(t.customers.nameRequired);
       return;
     }
 
@@ -67,15 +69,11 @@ export function CustomerForm({
         }),
       });
 
-      const data = await response.json().catch(() => null);
-
       if (!response.ok) {
         throw new Error(
-          typeof data?.detail === "string"
-            ? data.detail
-            : isEditing
-              ? "Unable to update customer."
-              : "Unable to create customer."
+          isEditing
+            ? t.customers.updateError
+            : t.customers.createError
         );
       }
 
@@ -85,7 +83,9 @@ export function CustomerForm({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : isEditing
+            ? t.customers.updateError
+            : t.customers.createError
       );
     } finally {
       setLoading(false);
@@ -96,13 +96,15 @@ export function CustomerForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-white">
-          {isEditing ? "Edit customer" : "Add customer"}
+          {isEditing
+            ? t.customers.editCustomer
+            : t.customers.addCustomer}
         </h2>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
           {isEditing
-            ? "Update customer information and relationship status."
-            : "Create a customer profile to start tracking visits, feedback, and retention."}
+            ? t.customers.formEditDescription
+            : t.customers.formCreateDescription}
         </p>
       </div>
 
@@ -112,7 +114,8 @@ export function CustomerForm({
             htmlFor="customer-name"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Full name <span className="text-rose-400">*</span>
+            {t.customers.fullName}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <input
@@ -123,7 +126,7 @@ export function CustomerForm({
             autoComplete="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="e.g. Mariana López"
+            placeholder={t.customers.namePlaceholder}
             className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-sky-500"
           />
         </div>
@@ -133,7 +136,7 @@ export function CustomerForm({
             htmlFor="customer-email"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Email address
+            {t.customers.customerEmail}
           </label>
 
           <input
@@ -142,7 +145,7 @@ export function CustomerForm({
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="customer@example.com"
+            placeholder={t.customers.emailPlaceholder}
             className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-sky-500"
           />
         </div>
@@ -152,7 +155,7 @@ export function CustomerForm({
             htmlFor="customer-phone"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Phone number
+            {t.customers.customerPhone}
           </label>
 
           <input
@@ -161,7 +164,7 @@ export function CustomerForm({
             autoComplete="tel"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            placeholder="e.g. +52 222 123 4567"
+            placeholder={t.customers.phonePlaceholder}
             className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-sky-500"
           />
         </div>
@@ -172,24 +175,28 @@ export function CustomerForm({
               htmlFor="customer-status"
               className="mb-2 block text-sm font-medium text-slate-200"
             >
-              Customer status
+              {t.customers.customerStatus}
             </label>
 
             <select
               id="customer-status"
               value={status}
               onChange={(event) => {
-  const nextStatus = event.target.value;
+                const nextStatus = event.target.value;
 
-  if (editableStatuses.includes(nextStatus as ClientStatus)) {
-    setStatus(nextStatus as ClientStatus);
-  }
-}}
+                if (
+                  editableStatuses.includes(
+                    nextStatus as ClientStatus
+                  )
+                ) {
+                  setStatus(nextStatus as ClientStatus);
+                }
+              }}
               className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500"
             >
-              <option value="new">New</option>
-              <option value="active">Active</option>
-              <option value="at_risk">At risk</option>
+              <option value="new">{t.customers.new}</option>
+              <option value="active">{t.customers.active}</option>
+              <option value="at_risk">{t.customers.atRisk}</option>
             </select>
           </div>
         )}
@@ -212,7 +219,7 @@ export function CustomerForm({
             disabled={loading}
             className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
           >
-            Cancel
+            {t.common.cancel}
           </button>
         )}
 
@@ -223,11 +230,11 @@ export function CustomerForm({
         >
           {loading
             ? isEditing
-              ? "Saving changes..."
-              : "Creating customer..."
+              ? t.customers.savingChanges
+              : t.customers.creatingCustomer
             : isEditing
-              ? "Save changes"
-              : "Create customer"}
+              ? t.customers.saveChanges
+              : t.customers.createCustomer}
         </button>
       </div>
     </form>

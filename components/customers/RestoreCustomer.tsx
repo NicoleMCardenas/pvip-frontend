@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, RotateCcw, X } from "lucide-react";
 import type { Client, ClientStatus } from "@/types";
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 type RestoreCustomerProps = {
   client: Client;
@@ -28,16 +29,17 @@ const validStatuses: ClientStatus[] = [
   "at_risk",
 ];
 
-const statusLabels: Record<ClientStatus, string> = {
-  new: "New",
-  active: "Active",
-  at_risk: "At Risk",
-};
-
 export function RestoreCustomer({
   client,
 }: RestoreCustomerProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+
+  const statusLabels: Record<ClientStatus, string> = {
+    new: t.customers.new,
+    active: t.customers.active,
+    at_risk: t.customers.atRisk,
+  };
 
   const [isOpen, setIsOpen] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
@@ -73,7 +75,7 @@ export function RestoreCustomer({
   // Keep keyboard handling synchronized without
   // recreating the dialog effect during requests.
   useEffect(() => {
-  isBusyRef.current = isBusy;
+    isBusyRef.current = isBusy;
   }, [isBusy]);
 
   function markOutcomeUnknown(message: string) {
@@ -113,7 +115,7 @@ export function RestoreCustomer({
     if (hasPendingVerification) {
       setVerificationState("unknown");
       setError(
-        "A previous restoration could not be confirmed. Check the customer status before trying again."
+        t.customers.previousRestoreUnknown
       );
     } else if (verificationState !== "restored") {
       setVerificationState("idle");
@@ -137,11 +139,11 @@ export function RestoreCustomer({
   }
 
   useEffect(() => {
-  if (!isOpen) return;
+    if (!isOpen) return;
 
-  const previousOverflow = document.body.style.overflow;
-  const previousFocus = document.activeElement;
-  const triggerElement = triggerRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
+    const triggerElement = triggerRef.current;
 
     document.body.style.overflow = "hidden";
     cancelRef.current?.focus();
@@ -228,7 +230,7 @@ export function RestoreCustomer({
     }
 
     if (requiresStatusSelection && !selectedStatus) {
-      setError("Please select a customer status.");
+      setError(t.customers.statusRequired);
       return;
     }
 
@@ -236,7 +238,7 @@ export function RestoreCustomer({
       if (sessionStorage.getItem(storageKey) === "true") {
         setVerificationState("unknown");
         setError(
-          "Check the customer status before attempting another restoration."
+          t.customers.checkBeforeRetry
         );
         return;
       }
@@ -272,17 +274,13 @@ export function RestoreCustomer({
 
         if (errorData?.outcome_unknown === true) {
           markOutcomeUnknown(
-            typeof errorData.detail === "string"
-              ? errorData.detail
-              : "The restoration result is unknown. Check the customer status before trying again."
+            t.customers.unknownRestoreResult
           );
           return;
         }
 
         setError(
-          typeof errorData?.detail === "string"
-            ? errorData.detail
-            : "Unable to restore customer."
+          t.customers.restoreError
         );
         return;
       }
@@ -294,7 +292,7 @@ export function RestoreCustomer({
         )
       ) {
         markOutcomeUnknown(
-          "The server response could not confirm restoration. Check the customer status before trying again."
+          t.customers.unconfirmedResponse
         );
         return;
       }
@@ -305,7 +303,7 @@ export function RestoreCustomer({
       router.refresh();
     } catch {
       markOutcomeUnknown(
-        "The restoration could not be confirmed. Check the customer status before trying again."
+        t.customers.unconfirmedRestore
       );
     } finally {
       operationLockRef.current = false;
@@ -337,15 +335,13 @@ export function RestoreCustomer({
 
       if (!response.ok) {
         throw new Error(
-          typeof data?.detail === "string"
-            ? data.detail
-            : "Unable to verify customer status."
+          t.customers.verifyError
         );
       }
 
       if (data?.id !== client.id) {
         throw new Error(
-          "The server returned an unexpected customer."
+          t.customers.unexpectedCustomer
         );
       }
 
@@ -369,13 +365,13 @@ export function RestoreCustomer({
       }
 
       throw new Error(
-        "The server returned an invalid customer status."
+        t.customers.invalidStatus
       );
     } catch (err) {
       markOutcomeUnknown(
         err instanceof Error
           ? err.message
-          : "Unable to verify customer status."
+          : t.customers.verifyError
       );
     } finally {
       operationLockRef.current = false;
@@ -390,10 +386,10 @@ export function RestoreCustomer({
         type="button"
         onClick={openDialog}
         className="inline-flex items-center justify-center gap-2 rounded-lg border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-medium text-sky-300 transition hover:border-sky-400 hover:bg-sky-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-        aria-label={`Restore ${client.name}`}
+        aria-label={`${t.customers.restoreCustomerAria}: ${client.name}`}
       >
         <RotateCcw size={14} strokeWidth={1.8} />
-        Restore
+        {t.customers.restoreCustomer}
       </button>
 
       {isOpen && (
@@ -422,7 +418,7 @@ export function RestoreCustomer({
                 type="button"
                 onClick={closeDialog}
                 disabled={isBusy}
-                aria-label="Close confirmation"
+                aria-label={t.customers.closeConfirmation}
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={19} />
@@ -433,26 +429,24 @@ export function RestoreCustomer({
               id={`restore-title-${client.id}`}
               className="mt-5 text-xl font-semibold tracking-tight text-white"
             >
-              Restore customer?
+              {t.customers.restoreQuestion}
             </h2>
 
             <p
               id={`restore-description-${client.id}`}
               className="mt-3 text-sm leading-relaxed text-slate-400"
             >
-              You are about to restore{" "}
+              {t.customers.restoreDescriptionStart}{" "}
               <span className="font-semibold text-white">
                 {client.name}
               </span>
-              . This customer will return to your customer
-              list, and their existing information and
-              history will remain preserved.
+              . {t.customers.restoreDescriptionEnd}
             </p>
 
             {previousStatus ? (
               <div className="mt-5 rounded-xl border border-slate-700 bg-slate-800/50 p-4">
                 <p className="text-xs text-slate-400">
-                  Customer status after restoration
+                  {t.customers.restoredStatus}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-white">
                   {statusLabels[previousStatus]}
@@ -464,7 +458,7 @@ export function RestoreCustomer({
                   htmlFor={`restore-status-${client.id}`}
                   className="mb-2 block text-sm font-medium text-slate-200"
                 >
-                  Select customer status
+                  {t.customers.selectStatus}
                   <span className="ml-1 text-rose-400">
                     *
                   </span>
@@ -492,7 +486,7 @@ export function RestoreCustomer({
                   required
                   className="min-h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-4 text-sm text-white outline-none transition focus:border-sky-500 disabled:opacity-50"
                 >
-                  <option value="">Choose a status</option>
+                  <option value="">{t.customers.chooseStatus}</option>
                   {validStatuses.map((status) => (
                     <option key={status} value={status}>
                       {statusLabels[status]}
@@ -501,9 +495,7 @@ export function RestoreCustomer({
                 </select>
 
                 <p className="mt-2 text-xs leading-relaxed text-slate-500">
-                  This customer was archived before their
-                  previous status was recorded. Choose the
-                  appropriate status to restore them.
+                  {t.customers.missingPreviousStatus}
                 </p>
               </div>
             )}
@@ -528,8 +520,7 @@ export function RestoreCustomer({
                 role="status"
                 className="mt-5 rounded-xl border border-sky-500/20 bg-sky-500/10 p-4 text-sm text-sky-200"
               >
-                The customer is still archived. You can
-                try restoring them again.
+                {t.customers.stillArchived}
               </p>
             )}
 
@@ -538,9 +529,7 @@ export function RestoreCustomer({
                 role="status"
                 className="mt-5 rounded-xl border border-emerald-500/20 bg-emerald-950/30 p-4 text-sm text-emerald-200"
               >
-                This customer is no longer archived.
-                Refresh the customer list to see the
-                latest information.
+                {t.customers.alreadyRestored}
               </p>
             )}
 
@@ -553,8 +542,8 @@ export function RestoreCustomer({
                 className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
                 {verificationState === "restored"
-                  ? "Close"
-                  : "Cancel"}
+                  ? t.customers.closeConfirmation
+                  : t.common.cancel}
               </button>
 
               {needsVerification ? (
@@ -565,8 +554,8 @@ export function RestoreCustomer({
                   className="rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-50"
                 >
                   {verificationState === "checking"
-                    ? "Checking..."
-                    : "Check customer status"}
+                    ? t.customers.checking
+                    : t.customers.checkStatus}
                 </button>
               ) : verificationState !== "restored" ? (
                 <button
@@ -580,8 +569,8 @@ export function RestoreCustomer({
                   className="rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isRestoring
-                    ? "Restoring..."
-                    : "Restore customer"}
+                    ? t.customers.restoring
+                    : t.customers.restoreCustomer}
                 </button>
               ) : null}
             </div>

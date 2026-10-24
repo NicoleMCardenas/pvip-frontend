@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Archive, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Client } from "@/types";
 
 type ArchiveCustomerProps = {
@@ -14,6 +15,7 @@ export function ArchiveCustomer({
   client,
 }: ArchiveCustomerProps) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
@@ -113,13 +115,7 @@ export function ArchiveCustomer({
       );
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-
-        throw new Error(
-          typeof data?.detail === "string"
-            ? data.detail
-            : "Unable to archive customer."
-        );
+        throw new Error(t.customers.archiveError);
       }
 
       setIsOpen(false);
@@ -128,7 +124,7 @@ export function ArchiveCustomer({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : t.customers.archiveError
       );
     } finally {
       isArchivingRef.current = false;
@@ -146,10 +142,10 @@ export function ArchiveCustomer({
           setIsOpen(true);
         }}
         className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-        aria-label={`Archive ${client.name}`}
+        aria-label={`${t.customers.archiveCustomerAria}: ${client.name}`}
       >
         <Archive size={14} strokeWidth={1.8} />
-        Archive
+        {t.customers.archiveCustomer}
       </button>
 
       {isOpen && (
@@ -177,7 +173,7 @@ export function ArchiveCustomer({
                 type="button"
                 onClick={closeDialog}
                 disabled={isArchiving}
-                aria-label="Close confirmation"
+                aria-label={t.customers.closeConfirmation}
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={19} />
@@ -188,20 +184,18 @@ export function ArchiveCustomer({
               id={`archive-title-${client.id}`}
               className="mt-5 text-xl font-semibold tracking-tight text-white"
             >
-              Archive customer?
+              {t.customers.archiveQuestion}
             </h2>
 
             <p
               id={`archive-description-${client.id}`}
               className="mt-3 text-sm leading-relaxed text-slate-400"
             >
-              You are about to archive{" "}
+              {t.customers.archiveDescriptionStart}{" "}
               <span className="font-semibold text-white">
                 {client.name}
               </span>
-              . This customer will no longer appear in your active
-              customer list. Their existing information and history
-              will remain stored.
+              . {t.customers.archiveDescriptionEnd}
             </p>
 
             {error && (
@@ -221,7 +215,7 @@ export function ArchiveCustomer({
                 disabled={isArchiving}
                 className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
-                Cancel
+                {t.common.cancel}
               </button>
 
               <button
@@ -231,8 +225,8 @@ export function ArchiveCustomer({
                 className="rounded-xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isArchiving
-                  ? "Archiving..."
-                  : "Archive customer"}
+                  ? t.customers.archiving
+                  : t.customers.archiveCustomer}
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Client } from "@/types";
 import { CustomerForm } from "./CustomerForm";
 import { EditCustomer } from "./EditCustomer";
@@ -14,6 +15,8 @@ type EditCustomerPanelProps = {
 export function EditCustomerPanel({
   client,
 }: EditCustomerPanelProps) {
+  const { t } = useLanguage();
+
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
@@ -108,14 +111,14 @@ export function EditCustomerPanel({
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer management
+                  {t.customers.managementLabel}
                 </p>
 
                 <h2
                   id={`edit-customer-${client.id}`}
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  Edit customer
+                  {t.customers.editCustomer}
                 </h2>
               </div>
 
@@ -123,7 +126,7 @@ export function EditCustomerPanel({
                 ref={closeButtonRef}
                 type="button"
                 onClick={closePanel}
-                aria-label="Close customer form"
+                aria-label={t.customers.closeCustomerForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
                 <X size={20} />
