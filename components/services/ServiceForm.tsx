@@ -1,8 +1,9 @@
 
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Service } from "@/types/service";
 
 type ServiceFormProps = {
@@ -50,6 +51,10 @@ export function ServiceForm({
   onDirtyChange,
 }: ServiceFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.services;
+  const formId = useId();
+
   const isEditing = Boolean(service);
 
   const [initialValues] = useState<FormValues>(() =>
@@ -93,17 +98,17 @@ export function ServiceForm({
     const price = Number(values.price);
 
     if (!name) {
-      setError("Enter a service name.");
+      setError(copy.nameRequired);
       return;
     }
 
     if (name.length > 150) {
-      setError("Service name must be 150 characters or fewer.");
+      setError(copy.nameTooLong);
       return;
     }
 
     if (description.length > 1000 || category.length > 100) {
-      setError("Description or category exceeds the allowed length.");
+      setError(copy.descriptionOrCategoryTooLong);
       return;
     }
 
@@ -112,7 +117,7 @@ export function ServiceForm({
       !Number.isInteger(duration) ||
       duration <= 0
     ) {
-      setError("Duration must be a whole number greater than zero.");
+      setError(copy.invalidDuration);
       return;
     }
 
@@ -122,7 +127,7 @@ export function ServiceForm({
       price < 0 ||
       !/^\d+(\.\d{1,2})?$/.test(values.price)
     ) {
-      setError("Enter a valid price with up to two decimal places.");
+      setError(copy.invalidPrice);
       return;
     }
 
@@ -156,8 +161,8 @@ export function ServiceForm({
           typeof data?.detail === "string"
             ? data.detail
             : isEditing
-              ? "Unable to update service."
-              : "Unable to create service."
+              ? copy.updateError
+              : copy.createError
         );
       }
 
@@ -167,7 +172,7 @@ export function ServiceForm({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : copy.unexpectedError
       );
     } finally {
       setLoading(false);
@@ -184,24 +189,28 @@ export function ServiceForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-xl font-semibold tracking-tight text-white">
-          {isEditing ? "Edit service details" : "Add a service"}
+          {isEditing ? copy.editFormTitle : copy.addFormTitle}
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
           {isEditing
-            ? "Update service information. Historical visit amounts will remain unchanged."
-            : "Add a service to your catalog so it can be selected when recording customer visits."}
+            ? copy.editFormDescription
+            : copy.addFormDescription}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="service-name" className={labelClassName}>
-            Service name <span className="text-rose-400">*</span>
+          <label
+            htmlFor={`${formId}-name`}
+            className={labelClassName}
+          >
+            {copy.serviceName}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <input
-            id="service-name"
+            id={`${formId}-name`}
             type="text"
             required
             maxLength={150}
@@ -210,18 +219,21 @@ export function ServiceForm({
             onChange={(event) =>
               updateField("name", event.target.value)
             }
-            placeholder="e.g. Deep cleansing facial"
+            placeholder={copy.serviceNamePlaceholder}
             className={inputClassName}
           />
         </div>
 
         <div>
-          <label htmlFor="service-category" className={labelClassName}>
-            Category
+          <label
+            htmlFor={`${formId}-category`}
+            className={labelClassName}
+          >
+            {copy.category}
           </label>
 
           <input
-            id="service-category"
+            id={`${formId}-category`}
             type="text"
             maxLength={100}
             disabled={loading}
@@ -229,18 +241,22 @@ export function ServiceForm({
             onChange={(event) =>
               updateField("category", event.target.value)
             }
-            placeholder="e.g. Facial treatments"
+            placeholder={copy.categoryPlaceholder}
             className={inputClassName}
           />
         </div>
 
         <div>
-          <label htmlFor="service-duration" className={labelClassName}>
-            Duration (minutes) <span className="text-rose-400">*</span>
+          <label
+            htmlFor={`${formId}-duration`}
+            className={labelClassName}
+          >
+            {copy.durationMinutes}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <input
-            id="service-duration"
+            id={`${formId}-duration`}
             type="number"
             required
             min="1"
@@ -250,18 +266,22 @@ export function ServiceForm({
             onChange={(event) =>
               updateField("duration", event.target.value)
             }
-            placeholder="e.g. 60"
+            placeholder={copy.durationPlaceholder}
             className={inputClassName}
           />
         </div>
 
         <div>
-          <label htmlFor="service-price" className={labelClassName}>
-            Price (MXN) <span className="text-rose-400">*</span>
+          <label
+            htmlFor={`${formId}-price`}
+            className={labelClassName}
+          >
+            {copy.priceMXN}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <input
-            id="service-price"
+            id={`${formId}-price`}
             type="number"
             required
             min="0"
@@ -271,18 +291,21 @@ export function ServiceForm({
             onChange={(event) =>
               updateField("price", event.target.value)
             }
-            placeholder="e.g. 850.00"
+            placeholder={copy.pricePlaceholder}
             className={inputClassName}
           />
         </div>
 
         <div>
-          <label htmlFor="service-description" className={labelClassName}>
-            Description
+          <label
+            htmlFor={`${formId}-description`}
+            className={labelClassName}
+          >
+            {copy.description}
           </label>
 
           <textarea
-            id="service-description"
+            id={`${formId}-description`}
             rows={4}
             maxLength={1000}
             disabled={loading}
@@ -290,7 +313,7 @@ export function ServiceForm({
             onChange={(event) =>
               updateField("description", event.target.value)
             }
-            placeholder="Describe what this service includes..."
+            placeholder={copy.descriptionPlaceholder}
             className={inputClassName}
           />
         </div>
@@ -313,7 +336,7 @@ export function ServiceForm({
             disabled={loading}
             className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
           >
-            Cancel
+            {copy.cancel}
           </button>
         )}
 
@@ -324,11 +347,11 @@ export function ServiceForm({
         >
           {loading
             ? isEditing
-              ? "Saving changes..."
-              : "Adding service..."
+              ? copy.savingChanges
+              : copy.addingService
             : isEditing
-              ? "Save changes"
-              : "Add service"}
+              ? copy.saveChanges
+              : copy.addService}
         </button>
       </div>
     </form>

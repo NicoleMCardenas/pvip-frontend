@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { Pencil, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Service } from "@/types/service";
 import { ServiceForm } from "./ServiceForm";
 
@@ -16,6 +17,9 @@ type EditServiceProps = {
 };
 
 export function EditService({ service }: EditServiceProps) {
+  const { t } = useLanguage();
+  const copy = t.services;
+
   const [isOpen, setIsOpen] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
@@ -29,7 +33,7 @@ export function EditService({ service }: EditServiceProps) {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-  isDirtyRef.current = dirty;
+    isDirtyRef.current = dirty;
   }
 
   const finishClosing = useCallback(() => {
@@ -145,12 +149,12 @@ export function EditService({ service }: EditServiceProps) {
         ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(true)}
-        aria-label={`Edit ${service.name}`}
-        title={`Edit ${service.name}`}
+        aria-label={`${copy.editAriaLabel} ${service.name}`}
+        title={`${copy.editAriaLabel} ${service.name}`}
         className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-sky-500/50 hover:bg-slate-800 hover:text-white"
       >
         <Pencil size={14} aria-hidden="true" />
-        Edit
+        {copy.edit}
       </button>
 
       {isOpen && (
@@ -171,14 +175,14 @@ export function EditService({ service }: EditServiceProps) {
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Business operations
+                  {copy.eyebrow}
                 </p>
 
                 <h2
                   id={`edit-service-title-${service.id}`}
                   className="mt-1 truncate text-lg font-semibold text-white"
                 >
-                  Edit service
+                  {copy.editService}
                 </h2>
 
                 <p className="mt-1 truncate text-xs text-slate-400">
@@ -190,10 +194,10 @@ export function EditService({ service }: EditServiceProps) {
                 ref={closeButtonRef}
                 type="button"
                 onClick={requestClose}
-                aria-label="Close edit service form"
+                aria-label={copy.closeEditForm}
                 className="ml-4 rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
-                <X size={20} />
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
 
@@ -221,15 +225,14 @@ export function EditService({ service }: EditServiceProps) {
                   id={`edit-service-discard-title-${service.id}`}
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardTitle}
                 </h3>
 
                 <p
                   id={`edit-service-discard-description-${service.id}`}
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  You have unsaved changes to this service.
-                  Closing the form will discard them.
+                  {copy.discardEditDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -239,7 +242,7 @@ export function EditService({ service }: EditServiceProps) {
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -247,7 +250,7 @@ export function EditService({ service }: EditServiceProps) {
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

@@ -8,9 +8,13 @@ import {
   useState,
 } from "react";
 import { Plus, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import { ServiceForm } from "./ServiceForm";
 
 export function AddService() {
+  const { t } = useLanguage();
+  const copy = t.services;
+
   const [isOpen, setIsOpen] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
@@ -24,7 +28,7 @@ export function AddService() {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-  isDirtyRef.current = dirty;
+    isDirtyRef.current = dirty;
   }
 
   const finishClosing = useCallback(() => {
@@ -138,7 +142,7 @@ export function AddService() {
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
       >
         <Plus size={18} aria-hidden="true" />
-        Add service
+        {copy.addService}
       </button>
 
       {isOpen && (
@@ -154,19 +158,19 @@ export function AddService() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-service-title"
-            className="relative z-10 flex h-full w-full max-w-lg flex-col border-l border-slate-800 bg-slate-900 shadow-2xl"
+            className="relative z-10 flex h-full w-full max-w-lg flex-col border-l border-slate-800 bg-slate-900 text-left shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Business operations
+                  {copy.eyebrow}
                 </p>
 
                 <h2
                   id="add-service-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  New service
+                  {copy.newService}
                 </h2>
               </div>
 
@@ -174,10 +178,10 @@ export function AddService() {
                 ref={closeButtonRef}
                 type="button"
                 onClick={requestClose}
-                aria-label="Close service form"
+                aria-label={copy.closeForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
-                <X size={20} />
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
 
@@ -204,15 +208,14 @@ export function AddService() {
                   id="add-service-discard-title"
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardTitle}
                 </h3>
 
                 <p
                   id="add-service-discard-description"
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  You have unsaved service information.
-                  Closing this form will discard your changes.
+                  {copy.discardCreateDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -222,7 +225,7 @@ export function AddService() {
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -230,7 +233,7 @@ export function AddService() {
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

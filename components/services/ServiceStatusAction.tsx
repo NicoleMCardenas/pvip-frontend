@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Archive, RotateCcw, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Service } from "@/types/service";
 
 type ServiceStatusActionProps = {
@@ -14,6 +15,8 @@ export function ServiceStatusAction({
   service,
 }: ServiceStatusActionProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.services;
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -137,8 +140,8 @@ export function ServiceStatusAction({
           typeof data?.detail === "string"
             ? data.detail
             : isActive
-              ? "Unable to deactivate service."
-              : "Unable to reactivate service."
+              ? copy.deactivateError
+              : copy.reactivateError
         );
       }
 
@@ -149,7 +152,7 @@ export function ServiceStatusAction({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : copy.unexpectedError
       );
     } finally {
       setLoading(false);
@@ -166,7 +169,7 @@ export function ServiceStatusAction({
           setIsOpen(true);
         }}
         aria-label={`${
-          isActive ? "Deactivate" : "Reactivate"
+          isActive ? copy.deactivate : copy.reactivate
         } ${service.name}`}
         className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-800 hover:text-white"
       >
@@ -176,7 +179,7 @@ export function ServiceStatusAction({
           <RotateCcw size={14} aria-hidden="true" />
         )}
 
-        {isActive ? "Deactivate" : "Reactivate"}
+        {isActive ? copy.deactivate : copy.reactivate}
       </button>
 
       {isOpen && (
@@ -195,18 +198,18 @@ export function ServiceStatusAction({
                 className="text-lg font-semibold text-white"
               >
                 {isActive
-                  ? "Deactivate service?"
-                  : "Reactivate service?"}
+                  ? copy.deactivateTitle
+                  : copy.reactivateTitle}
               </h2>
 
               <button
                 type="button"
                 onClick={closeDialog}
                 disabled={loading}
-                aria-label="Close confirmation"
+                aria-label={copy.closeConfirmation}
                 className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
-                <X size={18} />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
 
@@ -214,22 +217,12 @@ export function ServiceStatusAction({
               id={`service-status-description-${service.id}`}
               className="mt-3 text-sm leading-relaxed text-slate-400"
             >
-              {isActive ? (
-                <>
-                  <span className="font-medium text-white">
-                    {service.name}
-                  </span>{" "}
-                  will no longer be available for new visits.
-                  Existing visit records will be preserved.
-                </>
-              ) : (
-                <>
-                  <span className="font-medium text-white">
-                    {service.name}
-                  </span>{" "}
-                  will become available for new visits again.
-                </>
-              )}
+              <span className="font-medium text-white">
+                {service.name}
+              </span>{" "}
+              {isActive
+                ? copy.deactivateDescription
+                : copy.reactivateDescription}
             </p>
 
             {error && (
@@ -249,7 +242,7 @@ export function ServiceStatusAction({
                 disabled={loading}
                 className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
-                Cancel
+                {copy.cancel}
               </button>
 
               <button
@@ -263,10 +256,10 @@ export function ServiceStatusAction({
                 }
               >
                 {loading
-                  ? "Processing..."
+                  ? copy.processing
                   : isActive
-                    ? "Deactivate service"
-                    : "Reactivate service"}
+                    ? copy.deactivateService
+                    : copy.reactivateService}
               </button>
             </div>
           </div>
@@ -275,4 +268,3 @@ export function ServiceStatusAction({
     </>
   );
 }
-
