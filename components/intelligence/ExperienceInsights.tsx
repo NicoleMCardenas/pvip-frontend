@@ -1,9 +1,14 @@
+
+"use client";
+
 import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
   Info,
 } from "lucide-react";
+
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 import type {
   ExperienceTrend,
@@ -18,18 +23,19 @@ type InsightConfig = {
   description: string;
 };
 
-const insightConfig: InsightConfig[] = [
-  {
-    metric: "satisfaction",
-    title: "Satisfaction Movement",
-    description: "Change in average customer satisfaction",
-  },
-  {
-    metric: "nps",
-    title: "NPS Movement",
-    description: "Change in customer recommendation score",
-  },
-];
+type InsightLabels = {
+  insufficientMonths: string;
+  higher: string;
+  lower: string;
+  unchanged: string;
+  by: string;
+  points: string;
+  scorePoints: string;
+  validResponse: string;
+  validResponses: string;
+  limitedSample: string;
+  comparisonNote: string;
+};
 
 function getMetricValue(
   trend: ExperienceTrend,
@@ -49,10 +55,13 @@ function getResponseCount(
     : trend.nps_responses;
 }
 
-function formatMonth(month: string): string {
+function formatMonth(
+  month: string,
+  locale: string
+): string {
   const [year, monthNumber] = month.split("-").map(Number);
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     year: "numeric",
     timeZone: "UTC",
@@ -62,9 +71,13 @@ function formatMonth(month: string): string {
 function MovementCard({
   trends,
   config,
+  locale,
+  labels,
 }: {
   trends: ExperienceTrend[];
   config: InsightConfig;
+  locale: string;
+  labels: InsightLabels;
 }) {
   const validMonths = trends.filter(
     (trend) => getMetricValue(trend, config.metric) !== null
@@ -92,8 +105,7 @@ function MovementCard({
           />
 
           <p className="text-sm leading-relaxed text-slate-400">
-            At least two months with valid responses are
-            needed to compare this metric.
+            {labels.insufficientMonths}
           </p>
         </div>
       </article>
@@ -117,10 +129,10 @@ function MovementCard({
       : ArrowRight;
 
   const movementLabel = isPositive
-    ? "Higher"
+    ? labels.higher
     : isNegative
-      ? "Lower"
-      : "Unchanged";
+      ? labels.lower
+      : labels.unchanged;
 
   const currentResponses = getResponseCount(
     current,
@@ -136,10 +148,14 @@ function MovementCard({
     currentResponses < 5 || previousResponses < 5;
 
   const changeUnit =
-    config.metric === "nps" ? "points" : "score points";
+    config.metric === "nps"
+      ? labels.points
+      : labels.scorePoints;
 
   const formattedDifference =
-    difference > 0 ? `+${difference.toFixed(2)}` : difference.toFixed(2);
+    difference > 0
+      ? `+${difference.toFixed(2)}`
+      : difference.toFixed(2);
 
   return (
     <article className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6">
@@ -168,34 +184,45 @@ function MovementCard({
           </p>
 
           <p className="text-xs text-slate-400">
-            {movementLabel} by {Math.abs(difference).toFixed(2)}{" "}
+            {movementLabel} {labels.by}{" "}
+            {Math.abs(difference).toFixed(2)}{" "}
             {changeUnit}
           </p>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
-        {[previous, current].map((trend) => (
-          <div
-            key={trend.month}
-            className="rounded-xl bg-slate-950/60 p-3"
-          >
-            <p className="text-xs text-slate-500">
-              {formatMonth(trend.month)}
-            </p>
+        {[previous, current].map((trend) => {
+          const responseCount = getResponseCount(
+            trend,
+            config.metric
+          );
 
-            <p className="mt-2 text-lg font-semibold tabular-nums text-white">
-              {getMetricValue(trend, config.metric)?.toFixed(2)}
-            </p>
+          return (
+            <div
+              key={trend.month}
+              className="rounded-xl bg-slate-950/60 p-3"
+            >
+              <p className="text-xs text-slate-500">
+                {formatMonth(trend.month, locale)}
+              </p>
 
-            <p className="mt-1 text-xs text-slate-500">
-              {getResponseCount(trend, config.metric)} valid{" "}
-              {getResponseCount(trend, config.metric) === 1
-                ? "response"
-                : "responses"}
-            </p>
-          </div>
-        ))}
+              <p className="mt-2 text-lg font-semibold tabular-nums text-white">
+                {getMetricValue(
+                  trend,
+                  config.metric
+                )?.toFixed(2)}
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                {responseCount}{" "}
+                {responseCount === 1
+                  ? labels.validResponse
+                  : labels.validResponses.toLowerCase()}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       {limitedSample && (
@@ -207,16 +234,13 @@ function MovementCard({
           />
 
           <p className="text-xs leading-relaxed text-amber-200/80">
-            Limited sample: at least one compared month has
-            fewer than five valid responses. Treat this change
-            as an early signal, not a confirmed trend.
+            {labels.limitedSample}
           </p>
         </div>
       )}
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        Comparison between the two most recent months with
-        valid responses. These months may not be consecutive.
+        {labels.comparisonNote}
       </p>
     </article>
   );
@@ -227,6 +251,37 @@ export default function ExperienceInsights({
 }: {
   data: ExperienceTrendsResponse;
 }) {
+  const { language, t } = useLanguage();
+  const copy = t.intelligence;
+  const locale = language === "es" ? "es-MX" : "en-US";
+
+  const insightConfig: InsightConfig[] = [
+    {
+      metric: "satisfaction",
+      title: copy.satisfactionMovement,
+      description: copy.satisfactionMovementDescription,
+    },
+    {
+      metric: "nps",
+      title: copy.npsMovement,
+      description: copy.npsMovementDescription,
+    },
+  ];
+
+  const labels: InsightLabels = {
+    insufficientMonths: copy.insufficientMonths,
+    higher: copy.higher,
+    lower: copy.lower,
+    unchanged: copy.unchanged,
+    by: copy.by,
+    points: copy.points,
+    scorePoints: copy.scorePoints,
+    validResponse: copy.validResponse,
+    validResponses: copy.validResponses,
+    limitedSample: copy.limitedSample,
+    comparisonNote: copy.comparisonNote,
+  };
+
   return (
     <section
       aria-labelledby="experience-insights-heading"
@@ -237,12 +292,11 @@ export default function ExperienceInsights({
           id="experience-insights-heading"
           className="text-xl font-semibold tracking-tight text-white sm:text-2xl"
         >
-          Experience Insights
+          {copy.insightsTitle}
         </h2>
 
         <p className="mt-1 text-sm text-slate-400">
-          Understand changes in customer experience using
-          historical survey responses.
+          {copy.insightsDescription}
         </p>
       </div>
 
@@ -252,6 +306,8 @@ export default function ExperienceInsights({
             key={config.metric}
             trends={data.trends}
             config={config}
+            locale={locale}
+            labels={labels}
           />
         ))}
       </div>

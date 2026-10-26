@@ -10,6 +10,8 @@ import {
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 import type {
   RetentionCase,
   RetentionCasePriority,
@@ -32,6 +34,8 @@ export function CreateRetentionCase({
   initialCustomerId,
 }: CreateRetentionCaseProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.retention;
 
   const [isOpen, setIsOpen] = useState(false);
   const [customerId, setCustomerId] = useState(
@@ -200,19 +204,19 @@ export function CreateRetentionCase({
     if (loading) return;
 
     if (!selectedCustomer) {
-      setError("Select an available customer.");
+      setError(copy.selectAvailableCustomer);
       return;
     }
 
     const cleanReason = reason.trim();
 
     if (!cleanReason) {
-      setError("Enter a reason for this retention case.");
+      setError(copy.enterReason);
       return;
     }
 
     if (cleanReason.length > 2000) {
-      setError("The reason cannot exceed 2000 characters.");
+      setError(copy.reasonTooLong);
       return;
     }
 
@@ -238,7 +242,7 @@ export function CreateRetentionCase({
         throw new Error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to create retention case."
+            : copy.unableToCreateCase
         );
       }
 
@@ -248,7 +252,7 @@ export function CreateRetentionCase({
       setError(
         error instanceof Error
           ? error.message
-          : "Unable to create retention case."
+          : copy.unableToCreateCase
       );
     } finally {
       setLoading(false);
@@ -268,7 +272,7 @@ export function CreateRetentionCase({
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Plus size={18} aria-hidden="true" />
-        Create case
+        {copy.createCase}
       </button>
 
       {isOpen && (
@@ -289,14 +293,14 @@ export function CreateRetentionCase({
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer retention
+                  {copy.title}
                 </p>
 
                 <h2
                   id="create-retention-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  New retention case
+                  {copy.newRetentionCase}
                 </h2>
               </div>
 
@@ -305,7 +309,7 @@ export function CreateRetentionCase({
                 type="button"
                 onClick={requestClose}
                 disabled={loading}
-                aria-label="Close retention case form"
+                aria-label={copy.closeRetentionForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={20} />
@@ -318,20 +322,17 @@ export function CreateRetentionCase({
             >
               <div className="flex-1 space-y-6 overflow-y-auto px-6 py-7">
                 <p className="text-sm leading-relaxed text-slate-400">
-                  Create a follow-up case to track customer
-                  recovery. Each customer can have only one
-                  open case at a time.
+                  {copy.createCaseDescription}
                 </p>
 
                 {eligibleCustomers.length === 0 ? (
                   <div className="rounded-xl border border-slate-700 bg-slate-800/40 p-5">
                     <p className="font-medium text-slate-200">
-                      No available customers
+                      {copy.noAvailableCustomers}
                     </p>
 
                     <p className="mt-2 text-sm text-slate-400">
-                      All active customers already have open
-                      cases, or no customers are available.
+                      {copy.noAvailableCustomersDescription}
                     </p>
                   </div>
                 ) : (
@@ -341,14 +342,14 @@ export function CreateRetentionCase({
                         htmlFor="retention-customer"
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Customer
+                        {copy.customer}
                       </label>
 
                       {isCustomerLocked ? (
                         <div className="rounded-xl border border-sky-900/50 bg-sky-950/20 px-4 py-3">
                           <p className="font-medium text-white">
                             {selectedCustomer?.name ??
-                              "Customer unavailable"}
+                              copy.customerUnavailable}
                           </p>
                         </div>
                       ) : (
@@ -370,7 +371,7 @@ export function CreateRetentionCase({
                           className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500 disabled:opacity-50"
                         >
                           <option value="">
-                            Select a customer
+                            {copy.selectCustomer}
                           </option>
 
                           {eligibleCustomers.map((customer) => (
@@ -390,7 +391,7 @@ export function CreateRetentionCase({
                         htmlFor="retention-reason"
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Reason
+                        {copy.reason}
                       </label>
 
                       <textarea
@@ -410,7 +411,7 @@ export function CreateRetentionCase({
                           );
                           setError("");
                         }}
-                        placeholder="Describe why this customer needs follow-up..."
+                        placeholder={copy.reasonPlaceholder}
                         className="w-full resize-y rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-500 disabled:opacity-50"
                       />
 
@@ -424,7 +425,7 @@ export function CreateRetentionCase({
                         htmlFor="retention-priority"
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Priority
+                        {copy.priority}
                       </label>
 
                       <select
@@ -446,9 +447,9 @@ export function CreateRetentionCase({
                         }}
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500 disabled:opacity-50"
                       >
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
+                        <option value="low">{copy.low}</option>
+                        <option value="medium">{copy.medium}</option>
+                        <option value="high">{copy.high}</option>
                       </select>
                     </div>
                   </>
@@ -471,7 +472,7 @@ export function CreateRetentionCase({
                   disabled={loading}
                   className="flex-1 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
                 >
-                  Cancel
+                  {copy.cancel}
                 </button>
 
                 <button
@@ -483,7 +484,7 @@ export function CreateRetentionCase({
                   }
                   className="flex-1 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {loading ? "Creating..." : "Create case"}
+                  {loading ? copy.creating : copy.createCase}
                 </button>
               </div>
             </form>
@@ -503,15 +504,14 @@ export function CreateRetentionCase({
                   id="retention-discard-title"
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardChangesQuestion}
                 </h3>
 
                 <p
                   id="retention-discard-description"
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  Your retention case has not been saved.
-                  Closing this form will discard your changes.
+                  {copy.createDiscardDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -521,7 +521,7 @@ export function CreateRetentionCase({
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -529,7 +529,7 @@ export function CreateRetentionCase({
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

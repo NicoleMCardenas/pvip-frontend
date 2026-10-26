@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { Pencil, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Visit } from "@/types/visit";
 import { VisitForm } from "./VisitForm";
 
@@ -43,6 +44,9 @@ export function EditVisitPanel({
   services,
   staff,
 }: EditVisitPanelProps) {
+  const { t } = useLanguage();
+  const copy = t.visits;
+
   const [isOpen, setIsOpen] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
@@ -60,16 +64,17 @@ export function EditVisitPanel({
   }
 
   const finishClosing = useCallback(() => {
-  isDirtyRef.current = false;
-  confirmationRef.current = false;
+    isDirtyRef.current = false;
+    confirmationRef.current = false;
 
-  setShowDiscardConfirmation(false);
-  setIsOpen(false);
+    setShowDiscardConfirmation(false);
+    setIsOpen(false);
 
-  requestAnimationFrame(() => {
-    triggerRef.current?.focus();
-  });
-}, []);
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }, []);
+
   const requestClose = useCallback(() => {
     if (isDirtyRef.current) {
       confirmationRef.current = true;
@@ -169,10 +174,10 @@ export function EditVisitPanel({
         type="button"
         onClick={() => setIsOpen(true)}
         className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-sky-500/40 hover:bg-sky-500/10 hover:text-sky-300"
-        aria-label="Edit visit"
+        aria-label={copy.editVisit}
       >
         <Pencil size={14} aria-hidden="true" />
-        Edit
+        {copy.edit}
       </button>
 
       {isOpen && (
@@ -193,14 +198,14 @@ export function EditVisitPanel({
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer activity
+                  {copy.eyebrow}
                 </p>
 
                 <h2
                   id={`edit-visit-title-${visit.id}`}
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  Edit visit
+                  {copy.editVisit}
                 </h2>
               </div>
 
@@ -208,7 +213,7 @@ export function EditVisitPanel({
                 ref={closeButtonRef}
                 type="button"
                 onClick={requestClose}
-                aria-label="Close visit editor"
+                aria-label={copy.closeVisitEditor}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
                 <X size={20} />
@@ -242,15 +247,14 @@ export function EditVisitPanel({
                   id={`visit-edit-discard-title-${visit.id}`}
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardTitle}
                 </h3>
 
                 <p
                   id={`visit-edit-discard-description-${visit.id}`}
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  You have unsaved changes to this visit.
-                  Closing the editor will discard them.
+                  {copy.editDiscardDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -260,7 +264,7 @@ export function EditVisitPanel({
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -268,7 +272,7 @@ export function EditVisitPanel({
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

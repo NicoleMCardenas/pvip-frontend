@@ -4,6 +4,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 export type StaffMember = {
   id: string;
   business_id: string;
@@ -48,6 +50,8 @@ export function StaffForm({
   onDirtyChange,
 }: StaffFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+
   const isEditing = Boolean(staffMember);
 
   const initialValues: StaffFormValues = {
@@ -107,12 +111,12 @@ export function StaffForm({
     event.preventDefault();
 
     if (!normalizedCurrent.name) {
-      setError("Team member name is required.");
+      setError(t.staff.nameRequired);
       return;
     }
 
     if (!normalizedCurrent.role) {
-      setError("Role is required.");
+      setError(t.staff.roleRequired);
       return;
     }
 
@@ -148,7 +152,7 @@ export function StaffForm({
         const message =
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to save team member.";
+            : t.staff.saveError;
 
         throw new Error(message);
       }
@@ -159,7 +163,7 @@ export function StaffForm({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : t.staff.unexpectedError
       );
     } finally {
       setLoading(false);
@@ -174,14 +178,14 @@ export function StaffForm({
       <div>
         <h3 className="text-xl font-semibold tracking-tight text-white">
           {isEditing
-            ? "Edit team member"
-            : "Add team member"}
+            ? t.staff.editStaff
+            : t.staff.addStaff}
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
           {isEditing
-            ? "Update employee information while keeping the team directory accurate."
-            : "Create a team profile to organize employee information and associate staff members with customer visits."}
+            ? t.staff.editFormDescription
+            : t.staff.createFormDescription}
         </p>
       </div>
 
@@ -191,7 +195,7 @@ export function StaffForm({
             htmlFor="staff-name"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Full name{" "}
+            {t.staff.fullName}{" "}
             <span className="text-rose-400">*</span>
           </label>
 
@@ -206,7 +210,7 @@ export function StaffForm({
             onChange={(event) =>
               updateField("name", event.target.value)
             }
-            placeholder="e.g. Sofia Martinez"
+            placeholder={t.staff.namePlaceholder}
             className={inputClassName}
           />
         </div>
@@ -216,7 +220,7 @@ export function StaffForm({
             htmlFor="staff-role"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Role{" "}
+            {t.staff.role}{" "}
             <span className="text-rose-400">*</span>
           </label>
 
@@ -230,7 +234,7 @@ export function StaffForm({
             onChange={(event) =>
               updateField("role", event.target.value)
             }
-            placeholder="e.g. Esthetician"
+            placeholder={t.staff.rolePlaceholder}
             className={inputClassName}
           />
         </div>
@@ -240,7 +244,7 @@ export function StaffForm({
             htmlFor="staff-email"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Email address
+            {t.staff.email}
           </label>
 
           <input
@@ -252,7 +256,7 @@ export function StaffForm({
             onChange={(event) =>
               updateField("email", event.target.value)
             }
-            placeholder="team@example.com"
+            placeholder={t.staff.emailPlaceholder}
             className={inputClassName}
           />
         </div>
@@ -262,7 +266,7 @@ export function StaffForm({
             htmlFor="staff-phone"
             className="mb-2 block text-sm font-medium text-slate-200"
           >
-            Phone number
+            {t.staff.phone}
           </label>
 
           <input
@@ -274,7 +278,7 @@ export function StaffForm({
             onChange={(event) =>
               updateField("phone", event.target.value)
             }
-            placeholder="e.g. +52 222 123 4567"
+            placeholder={t.staff.phonePlaceholder}
             className={inputClassName}
           />
         </div>
@@ -297,7 +301,7 @@ export function StaffForm({
             disabled={loading}
             className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
           >
-            Cancel
+            {t.staff.cancel}
           </button>
         )}
 
@@ -308,11 +312,11 @@ export function StaffForm({
         >
           {loading
             ? isEditing
-              ? "Saving changes..."
-              : "Creating team member..."
+              ? t.staff.savingChanges
+              : t.staff.creatingMember
             : isEditing
-              ? "Save changes"
-              : "Create team member"}
+              ? t.staff.saveChanges
+              : t.staff.createMember}
         </button>
       </div>
     </form>

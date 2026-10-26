@@ -1,14 +1,22 @@
-
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import Sidebar from "@/components/layout/Sidebar";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("kairo_session")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <MobileNavigation />

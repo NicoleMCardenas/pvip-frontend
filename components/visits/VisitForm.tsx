@@ -3,6 +3,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Visit } from "@/types/visit";
 
 type ClientOption = {
@@ -82,6 +83,15 @@ function getInitialValues(visit?: Visit): FormValues {
   };
 }
 
+type VisitErrorKey =
+  | "requiredOptionsError"
+  | "requiredFieldsError"
+  | "invalidDateError"
+  | "invalidAmountError"
+  | "createError"
+  | "updateError"
+  | "unexpectedError";
+
 export function VisitForm({
   clients,
   services,
@@ -92,18 +102,24 @@ export function VisitForm({
   onDirtyChange,
 }: VisitFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.visits;
+
   const isEditing = Boolean(visit);
 
   const [initialValues] = useState<FormValues>(() =>
     getInitialValues(visit)
   );
 
-  const [values, setValues] = useState<FormValues>(
-    () => getInitialValues(visit)
+  const [values, setValues] = useState<FormValues>(() =>
+    getInitialValues(visit)
   );
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState<VisitErrorKey | null>(
+    null
+  );
+  const [serverError, setServerError] = useState("");
 
   const availableClients = useMemo(
     () =>
@@ -154,6 +170,11 @@ export function VisitForm({
     values.amount !== initialValues.amount ||
     values.notes !== initialValues.notes;
 
+  function clearError() {
+    setErrorKey(null);
+    setServerError("");
+  }
+
   function updateField(
     field: keyof FormValues,
     value: string
@@ -174,7 +195,7 @@ export function VisitForm({
     }
 
     setValues(nextValues);
-    setError("");
+    clearError();
 
     const dirty =
       nextValues.clientId !== initialValues.clientId ||
@@ -195,9 +216,7 @@ export function VisitForm({
     if (loading) return;
 
     if (!hasRequiredOptions) {
-      setError(
-        "A customer, service, and team member are required."
-      );
+      setErrorKey("requiredOptionsError");
       return;
     }
 
@@ -207,7 +226,7 @@ export function VisitForm({
       !values.staffId ||
       !values.visitDate
     ) {
-      setError("Complete all required fields.");
+      setErrorKey("requiredFieldsError");
       return;
     }
 
@@ -217,9 +236,7 @@ export function VisitForm({
       Number.isNaN(selectedDate.getTime()) ||
       selectedDate.getTime() > Date.now()
     ) {
-      setError(
-        "Visit date must be valid and cannot be in the future."
-      );
+      setErrorKey("invalidDateError");
       return;
     }
 
@@ -230,12 +247,12 @@ export function VisitForm({
       !Number.isFinite(parsedAmount) ||
       parsedAmount < 0
     ) {
-      setError("Enter a valid amount of zero or greater.");
+      setErrorKey("invalidAmountError");
       return;
     }
 
     setLoading(true);
-    setError("");
+    clearError();
 
     try {
       const response = await fetch(
@@ -263,23 +280,21 @@ export function VisitForm({
       if (!response.ok) {
         const detail = data?.detail;
 
-        throw new Error(
-          typeof detail === "string"
-            ? detail
-            : isEditing
-              ? "Unable to update visit."
-              : "Unable to create visit."
-        );
+        if (typeof detail === "string" && detail.trim()) {
+          setServerError(detail);
+        } else {
+          setErrorKey(
+            isEditing ? "updateError" : "createError"
+          );
+        }
+
+        return;
       }
 
       onSuccess?.();
       router.refresh();
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred."
-      );
+    } catch {
+      setErrorKey("unexpectedError");
     } finally {
       setLoading(false);
     }
@@ -291,17 +306,23 @@ export function VisitForm({
   const labelClassName =
     "mb-2 block text-sm font-medium text-slate-200";
 
+  const displayedError = errorKey
+    ? copy[errorKey]
+    : serverError;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-xl font-semibold tracking-tight text-white">
-          {isEditing ? "Edit visit details" : "Record a visit"}
+          {isEditing
+            ? copy.editVisitDetails
+            : copy.recordVisit}
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
           {isEditing
-            ? "Update the visit information. Changes to the amount or date will be reflected in customer metrics."
-            : "Connect a customer with the service they received and the team member who attended them."}
+            ? copy.editDescription
+            : copy.createDescription}
         </p>
       </div>
 
@@ -310,8 +331,7 @@ export function VisitForm({
           role="status"
           className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm leading-relaxed text-amber-200"
         >
-          A customer, service, and team member must be
-          available to complete this form.
+          {copy.requiredOptions}
         </div>
       )}
 
@@ -321,7 +341,8 @@ export function VisitForm({
             htmlFor="visit-client"
             className={labelClassName}
           >
-            Customer <span className="text-rose-400">*</span>
+            {copy.customer}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <select
@@ -334,13 +355,13 @@ export function VisitForm({
             }
             className={inputClassName}
           >
-            <option value="">Select a customer</option>
+            <option value="">{copy.selectCustomer}</option>
 
             {availableClients.map((client) => (
               <option key={client.id} value={client.id}>
                 {client.name}
                 {client.status === "archived"
-                  ? " (Archived)"
+                  ? ` (${copy.archived})`
                   : ""}
               </option>
             ))}
@@ -352,7 +373,8 @@ export function VisitForm({
             htmlFor="visit-service"
             className={labelClassName}
           >
-            Service <span className="text-rose-400">*</span>
+            {copy.service}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <select
@@ -365,13 +387,13 @@ export function VisitForm({
             }
             className={inputClassName}
           >
-            <option value="">Select a service</option>
+            <option value="">{copy.selectService}</option>
 
             {availableServices.map((service) => (
               <option key={service.id} value={service.id}>
                 {service.name}
                 {service.status !== "active"
-                  ? " (Inactive)"
+                  ? ` (${copy.inactive})`
                   : ""}
               </option>
             ))}
@@ -383,7 +405,8 @@ export function VisitForm({
             htmlFor="visit-staff"
             className={labelClassName}
           >
-            Team member <span className="text-rose-400">*</span>
+            {copy.teamMember}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <select
@@ -396,13 +419,13 @@ export function VisitForm({
             }
             className={inputClassName}
           >
-            <option value="">Select a team member</option>
+            <option value="">{copy.selectTeamMember}</option>
 
             {availableStaff.map((member) => (
               <option key={member.id} value={member.id}>
                 {member.name}
                 {member.status !== "active"
-                  ? " (Inactive)"
+                  ? ` (${copy.inactive})`
                   : ""}
               </option>
             ))}
@@ -414,7 +437,7 @@ export function VisitForm({
             htmlFor="visit-date"
             className={labelClassName}
           >
-            Visit date and time{" "}
+            {copy.visitDateTime}{" "}
             <span className="text-rose-400">*</span>
           </label>
 
@@ -432,7 +455,7 @@ export function VisitForm({
           />
 
           <p className="mt-2 text-xs text-slate-500">
-            Enter the local date and time of the completed visit.
+            {copy.visitDateHelp}
           </p>
         </div>
 
@@ -441,7 +464,8 @@ export function VisitForm({
             htmlFor="visit-amount"
             className={labelClassName}
           >
-            Amount (MXN) <span className="text-rose-400">*</span>
+            {copy.amountMXN}{" "}
+            <span className="text-rose-400">*</span>
           </label>
 
           <input
@@ -460,8 +484,7 @@ export function VisitForm({
           />
 
           <p className="mt-2 text-xs text-slate-500">
-            The service price is suggested automatically.
-            You can adjust the final amount.
+            {copy.amountHelp}
           </p>
         </div>
 
@@ -470,7 +493,7 @@ export function VisitForm({
             htmlFor="visit-notes"
             className={labelClassName}
           >
-            Notes
+            {copy.notes}
           </label>
 
           <textarea
@@ -482,18 +505,18 @@ export function VisitForm({
             onChange={(event) =>
               updateField("notes", event.target.value)
             }
-            placeholder="Add optional details about this visit..."
+            placeholder={copy.notesPlaceholder}
             className={inputClassName}
           />
         </div>
       </div>
 
-      {error && (
+      {displayedError && (
         <p
           role="alert"
           className="rounded-xl border border-rose-900 bg-rose-950/40 p-3 text-sm text-rose-300"
         >
-          {error}
+          {displayedError}
         </p>
       )}
 
@@ -505,7 +528,7 @@ export function VisitForm({
             disabled={loading}
             className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
           >
-            Cancel
+            {copy.cancel}
           </button>
         )}
 
@@ -520,11 +543,11 @@ export function VisitForm({
         >
           {loading
             ? isEditing
-              ? "Saving changes..."
-              : "Recording visit..."
+              ? copy.savingChanges
+              : copy.recordingVisit
             : isEditing
-              ? "Save changes"
-              : "Record visit"}
+              ? copy.saveChanges
+              : copy.recordVisit}
         </button>
       </div>
     </form>

@@ -11,6 +11,8 @@ import {
   X,
 } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 import type {
   Client,
   RetentionCase,
@@ -25,15 +27,15 @@ type Props = {
   attributions: RevenueRecoveryAttribution[];
 };
 
-function money(value: number | string) {
-  return new Intl.NumberFormat("en-US", {
+function money(value: number | string, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "MXN",
   }).format(Number(value));
 }
 
-function date(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
+function date(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "America/Mexico_City",
@@ -60,6 +62,15 @@ export function RevenueAttributionManager({
   attributions,
 }: Props) {
   const router = useRouter();
+  const { language, t } = useLanguage();
+  const copy = t.revenueRecovery;
+  const locale = language === "es" ? "es-MX" : "en-US";
+  const formatMoney = (value: number | string) => money(value, locale);
+  const formatDate = (value: string) => date(value, locale);
+  const statusLabel = (status: string) =>
+    status === "pending" ? copy.pending :
+    status === "in_progress" ? copy.inProgress :
+    status === "resolved" ? copy.resolved : status;
   const [selectedCaseId, setSelectedCaseId] = useState("");
   const [selectedVisitId, setSelectedVisitId] = useState("");
   const [pendingAction, setPendingAction] = useState<
@@ -186,8 +197,8 @@ export function RevenueAttributionManager({
           getError(
             data,
             isCreate
-              ? "Unable to attribute revenue."
-              : "Unable to remove attribution."
+              ? copy.unableToAttribute
+              : copy.unableToRemove
           )
         );
       }
@@ -195,8 +206,8 @@ export function RevenueAttributionManager({
       setPendingAction(null);
       setSuccess(
         isCreate
-          ? "Revenue attribution recorded successfully."
-          : "Revenue attribution removed successfully."
+          ? copy.attributionRecorded
+          : copy.attributionRemoved
       );
 
       if (isCreate) {
@@ -209,7 +220,7 @@ export function RevenueAttributionManager({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : copy.unexpectedError
       );
     } finally {
       setLoading(false);
@@ -225,30 +236,29 @@ export function RevenueAttributionManager({
       <div className="mb-5">
         <div className="flex items-center gap-2 text-sm font-medium text-sky-400">
           <Link2 size={17} aria-hidden="true" />
-          Revenue Attribution
+          {copy.revenueAttribution}
         </div>
 
         <h2
           id="attribution-heading"
           className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl"
         >
-          Track recovered revenue
+          {copy.trackRecoveredRevenue}
         </h2>
 
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-          Link a qualifying customer visit to a retention case.
-          Each visit can be attributed only once.
+          {copy.attributionDescription}
         </p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1fr_1.15fr]">
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
           <h3 className="text-base font-semibold text-white">
-            New attribution
+            {copy.newAttribution}
           </h3>
 
           <p className="mt-2 text-sm text-slate-400">
-            Select a retention case to find eligible visits.
+            {copy.newAttributionDescription}
           </p>
 
           <div className="mt-6 space-y-5">
@@ -257,7 +267,7 @@ export function RevenueAttributionManager({
                 htmlFor="revenue-case"
                 className="mb-2 block text-sm font-medium text-slate-200"
               >
-                Retention case
+                {copy.retentionCase}
               </label>
 
               <select
@@ -272,14 +282,14 @@ export function RevenueAttributionManager({
                 }}
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-50"
               >
-                <option value="">Select a retention case</option>
+                <option value="">{copy.selectRetentionCase}</option>
 
                 {sortedCases.map((item) => (
                   <option key={item.id} value={item.id}>
                     {customerNames.get(item.client_id) ??
-                      "Customer unavailable"}{" "}
-                    · {item.status.replaceAll("_", " ")} ·{" "}
-                    {date(item.created_at)}
+                      copy.customerUnavailable}{" "}
+                    · {statusLabel(item.status)} ·{" "}
+                    {formatDate(item.created_at)}
                   </option>
                 ))}
               </select>
@@ -290,7 +300,7 @@ export function RevenueAttributionManager({
                 htmlFor="revenue-visit"
                 className="mb-2 block text-sm font-medium text-slate-200"
               >
-                Eligible visit
+                {copy.eligibleVisit}
               </label>
 
               <select
@@ -307,20 +317,18 @@ export function RevenueAttributionManager({
                 }}
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-50"
               >
-                <option value="">Select a visit</option>
+                <option value="">{copy.selectVisit}</option>
 
                 {eligibleVisits.map((visit) => (
                   <option key={visit.id} value={visit.id}>
-                    {date(visit.visit_date)} · {money(visit.amount)}
+                    {formatDate(visit.visit_date)} · {formatMoney(visit.amount)}
                   </option>
                 ))}
               </select>
 
               {selectedCaseId && eligibleVisits.length === 0 && (
                 <p className="mt-3 text-sm leading-relaxed text-amber-300">
-                  No eligible visits for this case. A visit must
-                  occur during the case period, have a positive
-                  amount, and not be attributed elsewhere.
+                  {copy.noEligibleVisits}
                 </p>
               )}
             </div>
@@ -328,17 +336,17 @@ export function RevenueAttributionManager({
             {selectedVisit && (
               <div className="rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
                 <p className="text-xs font-medium uppercase tracking-wide text-sky-400">
-                  Attribution preview
+                  {copy.attributionPreview}
                 </p>
 
                 <p className="mt-3 text-2xl font-semibold tabular-nums text-white">
-                  {money(selectedVisit.amount)}
+                  {formatMoney(selectedVisit.amount)}
                 </p>
 
                 <p className="mt-2 text-sm text-slate-400">
                   {customerNames.get(selectedVisit.client_id) ??
-                    "Customer unavailable"}{" "}
-                  · {date(selectedVisit.visit_date)}
+                    copy.customerUnavailable}{" "}
+                  · {formatDate(selectedVisit.visit_date)}
                 </p>
               </div>
             )}
@@ -354,7 +362,7 @@ export function RevenueAttributionManager({
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Link2 size={17} aria-hidden="true" />
-              Attribute revenue
+              {copy.attributeRevenue}
             </button>
           </div>
         </div>
@@ -362,7 +370,7 @@ export function RevenueAttributionManager({
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-base font-semibold text-white">
-              Recorded attributions
+              {copy.recordedAttributions}
             </h3>
 
             <span className="text-sm tabular-nums text-slate-400">
@@ -378,11 +386,10 @@ export function RevenueAttributionManager({
                 aria-hidden="true"
               />
               <p className="mt-4 font-medium text-white">
-                No revenue attributed yet
+                {copy.noAttributedRevenue}
               </p>
               <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-400">
-                Recorded attributions will appear here once
-                you link eligible visits to retention cases.
+                {copy.noAttributedRevenueDescription}
               </p>
             </div>
           ) : (
@@ -401,27 +408,27 @@ export function RevenueAttributionManager({
                         <p className="break-words text-sm font-semibold text-white">
                           {itemCase
                             ? customerNames.get(itemCase.client_id) ??
-                              "Customer unavailable"
-                            : "Retention case unavailable"}
+                              copy.customerUnavailable
+                            : copy.retentionCaseUnavailable}
                         </p>
 
                         <p className="mt-1 text-xs text-slate-400">
                           {visit
-                            ? date(visit.visit_date)
-                            : "Visit unavailable"}
+                            ? formatDate(visit.visit_date)
+                            : copy.visitUnavailable}
                         </p>
 
                         <p className="mt-3 text-lg font-semibold tabular-nums text-emerald-300">
                           {visit
-                            ? money(visit.amount)
-                            : "Amount unavailable"}
+                            ? formatMoney(visit.amount)
+                            : copy.amountUnavailable}
                         </p>
                       </div>
 
                       <button
                         type="button"
                         disabled={loading}
-                        aria-label="Remove revenue attribution"
+                        aria-label={copy.removeRevenueAttribution}
                         onClick={() => {
                           clearMessages();
                           setPendingAction({
@@ -476,14 +483,14 @@ export function RevenueAttributionManager({
                 className="text-lg font-semibold text-white"
               >
                 {pendingAction.type === "create"
-                  ? "Confirm revenue attribution"
-                  : "Remove revenue attribution?"}
+                  ? copy.confirmRevenueAttribution
+                  : copy.removeRevenueAttributionQuestion}
               </h3>
 
               <button
                 type="button"
                 disabled={loading}
-                aria-label="Close confirmation"
+                aria-label={copy.closeConfirmation}
                 onClick={() => setPendingAction(null)}
                 className="text-slate-400 hover:text-white disabled:opacity-50"
               >
@@ -496,17 +503,19 @@ export function RevenueAttributionManager({
               className="mt-4 text-sm leading-relaxed text-slate-400"
             >
               {pendingAction.type === "create"
-                ? `Attribute ${
-                    selectedVisit ? money(selectedVisit.amount) : "this visit"
-                  } to the selected retention case? This records an association, not proof that the retention action caused the purchase.`
-                : `Remove the attribution${
+                ? copy.confirmAttributionDescription.replace(
+                    "{amount}",
+                    selectedVisit ? formatMoney(selectedVisit.amount) : copy.thisVisit
+                  )
+                : copy.removeAttributionDescription.replace(
+                    "{amount}",
                     selectedAttribution &&
                     visitMap.get(selectedAttribution.visit_id)
-                      ? ` of ${money(
+                      ? ` ${formatMoney(
                           visitMap.get(selectedAttribution.visit_id)!.amount
                         )}`
                       : ""
-                  }? The original visit and retention case will remain unchanged.`}
+                  )}
             </p>
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -517,7 +526,7 @@ export function RevenueAttributionManager({
                 onClick={() => setPendingAction(null)}
                 className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800 disabled:opacity-50"
               >
-                Cancel
+                {copy.cancel}
               </button>
 
               <button
@@ -531,10 +540,10 @@ export function RevenueAttributionManager({
                 }`}
               >
                 {loading
-                  ? "Processing..."
+                  ? copy.processing
                   : pendingAction.type === "create"
-                    ? "Confirm attribution"
-                    : "Remove attribution"}
+                    ? copy.confirmAttribution
+                    : copy.removeAttribution}
                 {!loading && <ArrowRight size={16} aria-hidden="true" />}
               </button>
             </div>

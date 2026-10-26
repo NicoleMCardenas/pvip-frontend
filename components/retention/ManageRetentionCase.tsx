@@ -17,6 +17,8 @@ import {
   X,
 } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 import type {
   RetentionActivity,
   RetentionActivityCreate,
@@ -33,26 +35,12 @@ type ManageRetentionCaseProps = {
   customerName: string;
 };
 
-const activityLabels: Record<RetentionActivityType, string> = {
-  call: "Phone call",
-  email: "Email",
-  message: "Message",
-  other: "Other",
-};
-
-const outcomeLabels: Record<RetentionActivityOutcome, string> = {
-  contacted: "Contacted",
-  no_response: "No response",
-  follow_up_needed: "Follow-up needed",
-  other: "Other",
-};
-
-function formatDate(value: string) {
+function formatDate(value: string, locale: string) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) return "—";
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
@@ -63,6 +51,23 @@ export function ManageRetentionCase({
   customerName,
 }: ManageRetentionCaseProps) {
   const router = useRouter();
+  const { language, t } = useLanguage();
+  const copy = t.retention;
+  const locale = language === "es" ? "es-MX" : "en-US";
+
+  const activityLabels: Record<RetentionActivityType, string> = {
+    call: copy.phoneCall,
+    email: copy.email,
+    message: copy.message,
+    other: copy.other,
+  };
+
+  const outcomeLabels: Record<RetentionActivityOutcome, string> = {
+    contacted: copy.contacted,
+    no_response: copy.noResponse,
+    follow_up_needed: copy.followUpNeeded,
+    other: copy.other,
+  };
 
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<RetentionCaseStatus>(
@@ -179,13 +184,13 @@ export function ManageRetentionCase({
           "detail" in data &&
           typeof data.detail === "string"
             ? data.detail
-            : "Unable to load activity history.";
+            : copy.unableToLoadActivities;
 
         throw new Error(detail);
       }
 
       if (!Array.isArray(data)) {
-        throw new Error("Unexpected activity response.");
+        throw new Error(copy.unexpectedActivityResponse);
       }
 
       setActivities(data as RetentionActivity[]);
@@ -193,7 +198,7 @@ export function ManageRetentionCase({
       setActivitiesError(
         error instanceof Error
           ? error.message
-          : "Unable to load activity history."
+          : copy.unableToLoadActivities
       );
     } finally {
       setActivitiesLoading(false);
@@ -315,7 +320,7 @@ export function ManageRetentionCase({
         throw new Error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to update retention case."
+            : copy.unableToUpdateCase
         );
       }
 
@@ -325,7 +330,7 @@ export function ManageRetentionCase({
       if (resolving) {
         closePanel();
       } else {
-        setCaseSuccess("Case updated successfully.");
+        setCaseSuccess(copy.caseUpdated);
         setStatus(data.status);
         setPriority(data.priority);
       }
@@ -338,7 +343,7 @@ export function ManageRetentionCase({
       setCaseError(
         error instanceof Error
           ? error.message
-          : "Unable to update retention case."
+          : copy.unableToUpdateCase
       );
     } finally {
       setSavingCase(false);
@@ -380,14 +385,14 @@ export function ManageRetentionCase({
         throw new Error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to record activity."
+            : copy.unableToRecordActivity
         );
       }
 
       setActivityType("call");
       setOutcome("");
       setNotes("");
-      setActivitySuccess("Activity recorded successfully.");
+      setActivitySuccess(copy.activityRecorded);
 
       await loadActivities();
       router.refresh();
@@ -395,7 +400,7 @@ export function ManageRetentionCase({
       setActivityError(
         error instanceof Error
           ? error.message
-          : "Unable to record activity."
+          : copy.unableToRecordActivity
       );
     } finally {
       setSavingActivity(false);
@@ -407,7 +412,7 @@ export function ManageRetentionCase({
 
     if (hasCaseChanges || hasActivityChanges) {
       setCaseError(
-        "Save or discard your pending changes before resolving this case."
+        copy.saveBeforeResolving
       );
       return;
     }
@@ -426,7 +431,7 @@ export function ManageRetentionCase({
         className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-sky-700 hover:bg-slate-800 hover:text-white"
       >
         <Settings2 size={16} aria-hidden="true" />
-        {isResolved ? "View history" : "Manage case"}
+        {isResolved ? copy.viewHistory : copy.manageCase}
       </button>
 
       {isOpen && (
@@ -449,7 +454,7 @@ export function ManageRetentionCase({
             <div className="flex items-start justify-between gap-4 border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer retention
+                  {copy.title}
                 </p>
                 <h2
                   id="manage-retention-title"
@@ -459,8 +464,8 @@ export function ManageRetentionCase({
                 </h2>
                 <p className="mt-1 text-sm text-slate-400">
                   {isResolved
-                    ? "Resolved case history"
-                    : "Manage recovery follow-up"}
+                    ? copy.resolvedCaseHistory
+                    : copy.manageRecoveryFollowUp}
                 </p>
               </div>
 
@@ -469,7 +474,7 @@ export function ManageRetentionCase({
                 type="button"
                 onClick={requestClose}
                 disabled={busy}
-                aria-label="Close case management"
+                aria-label={copy.closeCaseManagement}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={20} />
@@ -481,23 +486,23 @@ export function ManageRetentionCase({
                 <div className="mb-4 flex items-center gap-2">
                   <Clock3 size={17} className="text-sky-400" />
                   <h3 className="text-sm font-semibold text-white">
-                    Case details
+                    {copy.caseDetails}
                   </h3>
                 </div>
 
                 <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-4">
                   <p className="text-xs uppercase tracking-wider text-slate-500">
-                    Reason
+                    {copy.reason}
                   </p>
                   <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">
                     {retentionCase.reason}
                   </p>
                   <p className="mt-4 text-xs text-slate-500">
-                    Created {formatDate(retentionCase.created_at)}
+                    {copy.created} {formatDate(retentionCase.created_at, locale)}
                   </p>
                   {retentionCase.resolved_at && (
                     <p className="mt-1 text-xs text-slate-500">
-                      Resolved {formatDate(retentionCase.resolved_at)}
+                      {copy.resolvedOn} {formatDate(retentionCase.resolved_at, locale)}
                     </p>
                   )}
                 </div>
@@ -507,7 +512,7 @@ export function ManageRetentionCase({
                 <div className="mb-4 flex items-center gap-2">
                   <Settings2 size={17} className="text-sky-400" />
                   <h3 className="text-sm font-semibold text-white">
-                    Case management
+                    {copy.caseManagement}
                   </h3>
                 </div>
 
@@ -517,7 +522,7 @@ export function ManageRetentionCase({
                       htmlFor={`case-status-${retentionCase.id}`}
                       className="mb-2 block text-sm font-medium text-slate-200"
                     >
-                      Status
+                      {copy.status}
                     </label>
                     <select
                       id={`case-status-${retentionCase.id}`}
@@ -532,10 +537,10 @@ export function ManageRetentionCase({
                       }}
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-60"
                     >
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">In progress</option>
+                      <option value="pending">{copy.pending}</option>
+                      <option value="in_progress">{copy.inProgress}</option>
                       {isResolved && (
-                        <option value="resolved">Resolved</option>
+                        <option value="resolved">{copy.resolved}</option>
                       )}
                     </select>
                   </div>
@@ -545,7 +550,7 @@ export function ManageRetentionCase({
                       htmlFor={`case-priority-${retentionCase.id}`}
                       className="mb-2 block text-sm font-medium text-slate-200"
                     >
-                      Priority
+                      {copy.priority}
                     </label>
                     <select
                       id={`case-priority-${retentionCase.id}`}
@@ -560,9 +565,9 @@ export function ManageRetentionCase({
                       }}
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-60"
                     >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
+                      <option value="low">{copy.low}</option>
+                      <option value="medium">{copy.medium}</option>
+                      <option value="high">{copy.high}</option>
                     </select>
                   </div>
                 </div>
@@ -577,7 +582,7 @@ export function ManageRetentionCase({
                       }
                       className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {savingCase ? "Saving..." : "Save changes"}
+                      {savingCase ? copy.saving : copy.saveChanges}
                     </button>
 
                     <button
@@ -587,7 +592,7 @@ export function ManageRetentionCase({
                       className="inline-flex items-center gap-2 rounded-xl border border-emerald-800/60 bg-emerald-950/30 px-4 py-2.5 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-950/60 disabled:opacity-50"
                     >
                       <CheckCircle2 size={16} />
-                      Resolve case
+                      {copy.resolveCase}
                     </button>
                   </div>
                 )}
@@ -615,7 +620,7 @@ export function ManageRetentionCase({
                 <div className="mb-4 flex items-center gap-2">
                   <Activity size={17} className="text-sky-400" />
                   <h3 className="text-sm font-semibold text-white">
-                    Activity history
+                    {copy.activityHistory}
                   </h3>
                 </div>
 
@@ -625,7 +630,7 @@ export function ManageRetentionCase({
                     className="flex items-center gap-2 rounded-xl border border-slate-800 p-4 text-sm text-slate-400"
                   >
                     <Loader2 size={16} className="animate-spin" />
-                    Loading activities...
+                    {copy.loadingActivities}
                   </div>
                 ) : activitiesError ? (
                   <div className="rounded-xl border border-rose-800/60 bg-rose-950/30 p-4">
@@ -637,17 +642,16 @@ export function ManageRetentionCase({
                       onClick={() => void loadActivities()}
                       className="mt-3 text-sm font-semibold text-sky-400 hover:text-sky-300"
                     >
-                      Try again
+                      {copy.tryAgain}
                     </button>
                   </div>
                 ) : activities.length === 0 ? (
                   <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-5">
                     <p className="text-sm font-medium text-slate-200">
-                      No activities recorded
+                      {copy.noActivitiesRecorded}
                     </p>
                     <p className="mt-2 text-sm text-slate-400">
-                      Customer contact attempts and outcomes will
-                      appear here.
+                      {copy.noActivitiesDescription}
                     </p>
                   </div>
                 ) : (
@@ -668,7 +672,7 @@ export function ManageRetentionCase({
                               {activityLabels[activity.activity_type]}
                             </p>
                             <time className="text-xs text-slate-500">
-                              {formatDate(activity.created_at)}
+                              {formatDate(activity.created_at, locale)}
                             </time>
                           </div>
 
@@ -694,7 +698,7 @@ export function ManageRetentionCase({
                   <div className="mb-4 flex items-center gap-2">
                     <Activity size={17} className="text-sky-400" />
                     <h3 className="text-sm font-semibold text-white">
-                      Add activity
+                      {copy.addActivity}
                     </h3>
                   </div>
 
@@ -707,7 +711,7 @@ export function ManageRetentionCase({
                         htmlFor={`activity-type-${retentionCase.id}`}
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Contact type
+                        {copy.contactType}
                       </label>
                       <select
                         id={`activity-type-${retentionCase.id}`}
@@ -721,10 +725,10 @@ export function ManageRetentionCase({
                         }}
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-50"
                       >
-                        <option value="call">Phone call</option>
-                        <option value="email">Email</option>
-                        <option value="message">Message</option>
-                        <option value="other">Other</option>
+                        <option value="call">{copy.phoneCall}</option>
+                        <option value="email">{copy.email}</option>
+                        <option value="message">{copy.message}</option>
+                        <option value="other">{copy.other}</option>
                       </select>
                     </div>
 
@@ -733,7 +737,7 @@ export function ManageRetentionCase({
                         htmlFor={`activity-outcome-${retentionCase.id}`}
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Outcome
+                        {copy.outcome}
                       </label>
                       <select
                         id={`activity-outcome-${retentionCase.id}`}
@@ -748,13 +752,13 @@ export function ManageRetentionCase({
                         }}
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500 disabled:opacity-50"
                       >
-                        <option value="">Not specified</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="no_response">No response</option>
+                        <option value="">{copy.notSpecified}</option>
+                        <option value="contacted">{copy.contacted}</option>
+                        <option value="no_response">{copy.noResponse}</option>
                         <option value="follow_up_needed">
-                          Follow-up needed
+                          {copy.followUpNeeded}
                         </option>
-                        <option value="other">Other</option>
+                        <option value="other">{copy.other}</option>
                       </select>
                     </div>
 
@@ -763,7 +767,7 @@ export function ManageRetentionCase({
                         htmlFor={`activity-notes-${retentionCase.id}`}
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Notes
+                        {copy.notes}
                       </label>
                       <textarea
                         id={`activity-notes-${retentionCase.id}`}
@@ -775,7 +779,7 @@ export function ManageRetentionCase({
                           setNotes(event.target.value);
                           setActivitySuccess("");
                         }}
-                        placeholder="Describe the customer interaction..."
+                        placeholder={copy.notesPlaceholder}
                         className="w-full resize-y rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-sky-500 disabled:opacity-50"
                       />
                     </div>
@@ -804,8 +808,8 @@ export function ManageRetentionCase({
                       className="rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-50"
                     >
                       {savingActivity
-                        ? "Recording..."
-                        : "Record activity"}
+                        ? copy.recording
+                        : copy.recordActivity}
                     </button>
                   </form>
                 </section>
@@ -819,7 +823,7 @@ export function ManageRetentionCase({
                 disabled={busy}
                 className="rounded-xl border border-slate-700 px-5 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
-                Close
+                {copy.close}
               </button>
             </div>
           </section>
@@ -839,8 +843,8 @@ export function ManageRetentionCase({
                   className="text-lg font-semibold text-white"
                 >
                   {showResolveConfirmation
-                    ? "Resolve this case?"
-                    : "Discard changes?"}
+                    ? copy.resolveCaseQuestion
+                    : copy.discardChangesQuestion}
                 </h3>
 
                 <p
@@ -848,8 +852,8 @@ export function ManageRetentionCase({
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
                   {showResolveConfirmation
-                    ? "This case will be marked as resolved and become read-only. Its activity history will remain available."
-                    : "Your unsaved changes will be lost if you close this panel."}
+                    ? copy.resolveCaseDescription
+                    : copy.manageDiscardDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -865,7 +869,7 @@ export function ManageRetentionCase({
                     }}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -888,10 +892,10 @@ export function ManageRetentionCase({
                     }
                   >
                     {savingCase
-                      ? "Saving..."
+                      ? copy.saving
                       : showResolveConfirmation
-                        ? "Resolve case"
-                        : "Discard changes"}
+                        ? copy.resolveCase
+                        : copy.discardChanges}
                   </button>
                 </div>
               </div>

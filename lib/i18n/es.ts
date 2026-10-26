@@ -248,9 +248,87 @@ const es = {
     title: "Personal",
     addStaff: "Agregar integrante",
     editStaff: "Editar integrante",
-    noStaff: "Todavía no hay personal registrado.",
+    noStaff: "Todavía no hay integrantes registrados.",
     noStaffDescription:
       "Agrega a las personas que prestan servicios en tu negocio.",
+
+    eyebrow: "Gestión del equipo",
+    subtitle:
+      "Administra tu equipo, organiza la información del personal y mantén una visión clara de quienes brindan atención a tus clientes.",
+
+    totalMembers: "Total de integrantes",
+    activeMembers: "Integrantes activos",
+    inactiveMembers: "Integrantes inactivos",
+
+    directoryTitle: "Directorio del equipo",
+    directoryDescription:
+      "Consulta los integrantes registrados y su estado actual.",
+    emptyTitle: "Todavía no hay integrantes",
+    emptyDescription:
+      "Tu directorio está vacío. Agrega al primer integrante para comenzar.",
+
+    memberColumn: "Integrante",
+    roleColumn: "Cargo",
+    contactColumn: "Contacto",
+    statusColumn: "Estado",
+    actionsColumn: "Acciones",
+    notProvided: "No proporcionado",
+    active: "Activo",
+    inactive: "Inactivo",
+
+    newMember: "Nuevo integrante",
+    closeForm: "Cerrar formulario de personal",
+    editAction: "Editar",
+    editMemberAria: "Editar integrante",
+
+    createFormDescription:
+      "Crea un perfil para organizar la información del personal y asociar integrantes con las visitas de clientes.",
+    editFormDescription:
+      "Actualiza la información del integrante para mantener el directorio al día.",
+
+    fullName: "Nombre completo",
+    namePlaceholder: "Ej. Sofía Martínez",
+    role: "Cargo",
+    rolePlaceholder: "Ej. Especialista en tratamientos",
+    email: "Correo electrónico",
+    emailPlaceholder: "equipo@ejemplo.com",
+    phone: "Teléfono",
+    phonePlaceholder: "Ej. +52 222 123 4567",
+
+    nameRequired: "El nombre del integrante es obligatorio.",
+    roleRequired: "El cargo es obligatorio.",
+    saveError: "No fue posible guardar al integrante.",
+    unexpectedError: "Ocurrió un error inesperado.",
+
+    cancel: "Cancelar",
+    savingChanges: "Guardando cambios...",
+    creatingMember: "Creando integrante...",
+    saveChanges: "Guardar cambios",
+    createMember: "Crear integrante",
+
+    discardTitle: "¿Descartar cambios?",
+    discardCreateDescription:
+      "Tienes información sin guardar. Si cierras este panel, perderás los cambios.",
+    discardEditDescription:
+      "Tienes cambios sin guardar en este integrante. Si cierras el panel, los perderás.",
+    keepEditing: "Seguir editando",
+    discardChanges: "Descartar cambios",
+
+    deactivate: "Desactivar",
+    reactivate: "Reactivar",
+    deactivateTitle: "¿Desactivar integrante?",
+    reactivateTitle: "¿Reactivar integrante?",
+    deactivateDescription:
+      "dejará de estar disponible para nuevas visitas de clientes. Su perfil y su historial de visitas se conservarán.",
+    reactivateDescription:
+      "volverá a estar activo y podrá asignarse a nuevas visitas de clientes.",
+    closeConfirmation: "Cerrar confirmación",
+    deactivateMember: "Desactivar integrante",
+    reactivateMember: "Reactivar integrante",
+    deactivating: "Desactivando...",
+    reactivating: "Reactivando...",
+    deactivateError: "No fue posible desactivar al integrante.",
+    reactivateError: "No fue posible reactivar al integrante.",
   },
 
   services: {
@@ -354,15 +432,215 @@ const es = {
     noVisits: "Todavía no hay visitas registradas.",
     noVisitsDescription:
       "Registra una visita para comenzar a construir el historial de tus clientes.",
+
+    eyebrow: "Actividad de clientes",
+    description:
+      "Registra las visitas de tus clientes, relaciona los servicios con los miembros del equipo y obtén una visión más clara de la actividad de tu negocio.",
+    historyTitle: "Historial de visitas",
+    historyDescription:
+      "Consulta las visitas registradas, sus servicios y los miembros del equipo que las atendieron.",
+
+    date: "Fecha",
+    customer: "Cliente",
+    service: "Servicio",
+    teamMember: "Miembro del equipo",
+    amount: "Importe",
+    actions: "Acciones",
+
+    customerUnavailable: "Cliente no disponible",
+    serviceUnavailable: "Servicio no disponible",
+    teamMemberUnavailable: "Miembro del equipo no disponible",
+
+    newVisit: "Nueva visita",
+    closeVisitForm: "Cerrar formulario de visita",
+    closeVisitEditor: "Cerrar editor de visita",
+
+    edit: "Editar",
+    delete: "Eliminar",
+    editVisitDetails: "Editar datos de la visita",
+    recordVisit: "Registrar visita",
+
+    createDescription:
+      "Relaciona al cliente con el servicio recibido y el miembro del equipo que lo atendió.",
+    editDescription:
+      "Actualiza los datos de la visita. Los cambios en el importe o la fecha se reflejarán en las métricas del cliente.",
+
+    requiredOptions:
+      "Debe haber al menos un cliente, un servicio y un miembro del equipo disponibles para completar este formulario.",
+    requiredOptionsError:
+      "Se necesita un cliente, un servicio y un miembro del equipo.",
+    requiredFieldsError: "Completa todos los campos obligatorios.",
+    invalidDateError:
+      "La fecha de la visita debe ser válida y no puede ser futura.",
+    invalidAmountError:
+      "Introduce un importe válido igual o mayor que cero.",
+
+    selectCustomer: "Selecciona un cliente",
+    selectService: "Selecciona un servicio",
+    selectTeamMember: "Selecciona un miembro del equipo",
+    archived: "Archivado",
+    inactive: "Inactivo",
+
+    visitDateTime: "Fecha y hora de la visita",
+    visitDateHelp:
+      "Introduce la fecha y hora local de la visita realizada.",
+    amountMXN: "Importe (MXN)",
+    amountHelp:
+      "El precio del servicio se propone automáticamente. Puedes ajustar el importe final.",
+    notes: "Notas",
+    notesPlaceholder:
+      "Agrega información adicional sobre esta visita (opcional)...",
+
+    cancel: "Cancelar",
+    saveChanges: "Guardar cambios",
+    savingChanges: "Guardando cambios...",
+    recordingVisit: "Registrando visita...",
+
+    discardTitle: "¿Descartar cambios?",
+    createDiscardDescription:
+      "Tienes información de la visita sin guardar. Si cierras este panel, perderás los cambios.",
+    editDiscardDescription:
+      "Tienes cambios sin guardar en esta visita. Si cierras el editor, perderás esos cambios.",
+    keepEditing: "Seguir editando",
+    discardChanges: "Descartar cambios",
+
+    deleteVisit: "Eliminar visita",
+    deleteTitle: "¿Eliminar esta visita?",
+    deleteDescription:
+      "Esta acción eliminará permanentemente la visita y actualizará el historial y las métricas del cliente.",
+    closeConfirmation: "Cerrar confirmación",
+    deletingVisit: "Eliminando visita...",
+    deleteVisitFor: "Eliminar visita de",
+
+    createError: "No fue posible registrar la visita.",
+    updateError: "No fue posible actualizar la visita.",
+    deleteError: "No fue posible eliminar la visita.",
+    unexpectedError: "Ocurrió un error inesperado.",
   },
 
   feedback: {
     title: "Opiniones de clientes",
     noFeedback: "Todavía no hay opiniones registradas.",
     noFeedbackDescription:
-      "Las respuestas de tus clientes aparecerán aquí.",
+      "Las encuestas asociadas a las visitas de tus clientes aparecerán aquí, junto con indicadores de satisfacción y lealtad.",
     nps: "NPS",
     csat: "Satisfacción",
+
+    eyebrow: "Inteligencia de clientes",
+    description:
+      "Conoce la satisfacción de tus clientes, monitorea su lealtad e identifica oportunidades para mejorar la experiencia después del servicio.",
+
+    overview: "Resumen de opiniones",
+    averageSatisfaction: "Satisfacción promedio",
+    basedOnRatings: "Basado en {count} calificaciones",
+    netPromoterScore: "Net Promoter Score",
+    basedOnResponses: "Basado en {count} respuestas",
+    responseRate: "Tasa de respuesta",
+    responseRateDescription:
+      "Encuestas completadas / encuestas totales",
+    pendingFeedback: "Opiniones pendientes",
+    pendingFeedbackDescription:
+      "Encuestas en espera de respuesta",
+
+    historyTitle: "Historial de encuestas",
+    historyDescription:
+      "Consulta las opiniones asociadas a las visitas de tus clientes.",
+
+    customer: "Cliente",
+    visit: "Visita",
+    satisfaction: "Satisfacción",
+    rebookIntent: "Intención de regresar",
+    status: "Estado",
+    actions: "Acciones",
+
+    customerUnavailable: "Cliente no disponible",
+    archived: "Archivado",
+    completed: "Completada",
+    pending: "Pendiente",
+
+    promoter: "Promotor",
+    passive: "Pasivo",
+    detractor: "Detractor",
+
+    yes: "Sí",
+    no: "No",
+    unsure: "No está seguro",
+
+    invalidLegacyValue: "Valor histórico no válido",
+    invalidLegacyValueDescription:
+      "Valor histórico fuera del rango permitido actualmente",
+
+    addSurvey: "Agregar encuesta",
+    newSurvey: "Nueva encuesta",
+    closeSurveyForm: "Cerrar formulario de encuesta",
+    createSurveyDescription:
+      "Crea una solicitud de opinión para una visita existente. Cada visita puede tener una sola encuesta.",
+    noEligibleVisits: "No hay visitas disponibles",
+    noEligibleVisitsDescription:
+      "Todas las visitas existentes ya tienen encuestas o todavía no se han registrado visitas.",
+    customerVisit: "Visita del cliente",
+    selectVisit: "Selecciona una visita",
+    selectedCustomer: "Cliente seleccionado",
+    visitLabel: "Visita:",
+    cancel: "Cancelar",
+    creating: "Creando...",
+    createSurvey: "Crear encuesta",
+    selectAvailableVisit: "Selecciona una visita disponible.",
+    unableToCreateSurvey: "No se pudo crear la encuesta.",
+    discardChangesTitle: "¿Descartar cambios?",
+    discardSurveyDescription:
+      "La visita seleccionada no se ha guardado. Si cierras el formulario, perderás tu selección.",
+    keepEditing: "Seguir editando",
+    discardChanges: "Descartar cambios",
+
+    recordCustomerFeedback: "Registrar opinión del cliente",
+    recordFeedbackDescription:
+      "Registra la experiencia del cliente después de su visita. Puedes guardar una respuesta parcial si algunas respuestas no están disponibles.",
+    customerSatisfaction: "Satisfacción del cliente (CSAT)",
+    satisfactionQuestion:
+      "¿Qué tan satisfecho quedó el cliente con el servicio?",
+    satisfactionScoreLabel: "Puntuación de satisfacción del cliente",
+    veryDissatisfied: "Muy insatisfecho",
+    verySatisfied: "Muy satisfecho",
+    npsQuestion:
+      "¿Qué tan probable es que el cliente recomiende el negocio?",
+    notLikely: "Nada probable",
+    extremelyLikely: "Extremadamente probable",
+    rebookingIntention: "Intención de regresar",
+    notAnswered: "Sin responder",
+    likelyToReturn: "Sí, probablemente regresará",
+    unlikelyToReturn: "No, probablemente no regresará",
+    notSureYet: "Todavía no está seguro",
+    customerComment: "Comentario del cliente",
+    commentPlaceholder:
+      "Agrega los comentarios compartidos por el cliente...",
+    savingResponse: "Guardando respuesta...",
+    saveResponse: "Guardar respuesta",
+
+    onlyPendingSurveys:
+      "Solo las encuestas pendientes pueden recibir una nueva respuesta.",
+    enterAtLeastOneResponse:
+      "Ingresa al menos una respuesta de la encuesta.",
+    invalidSatisfaction:
+      "La satisfacción debe ser un número entero del 1 al 5.",
+    invalidNps:
+      "El NPS debe ser un número entero del 0 al 10.",
+    invalidRebooking:
+      "Selecciona una intención de regresar válida.",
+    commentTooLong:
+      "El comentario debe tener 2000 caracteres o menos.",
+    unableToSaveResponse:
+      "No se pudo guardar la respuesta de la encuesta.",
+    unexpectedError: "Ocurrió un error inesperado.",
+
+    recordResponse: "Registrar respuesta",
+    surveyResponse: "Respuesta de encuesta",
+    closeSurveyResponse: "Cerrar respuesta de encuesta",
+    discardResponseDescription:
+      "Tienes respuestas de encuesta sin guardar. Si cierras este formulario, perderás los cambios.",
+
+
+
   },
 
   retention: {
@@ -374,13 +652,240 @@ const es = {
     pending: "Pendiente",
     inProgress: "En progreso",
     resolved: "Resuelto",
+
+    eyebrow: "Inteligencia de clientes",
+    description:
+      "Identifica a los clientes que necesitan atención, gestiona casos de recuperación y da seguimiento a las acciones de retención.",
+    selectedFromDashboard: "Seleccionado desde el panel",
+    customerUnavailable: "Cliente no disponible",
+    customerNotFound:
+      "No se encontró este cliente. Es posible que haya sido eliminado.",
+    customerHasActiveCase:
+      "Este cliente ya tiene un caso de retención activo.",
+    customerEligible:
+      "Puedes crear un caso de retención para este cliente.",
+    customerNotEligible:
+      "Este cliente no está disponible para crear un caso de retención.",
+    viewAllRetention: "Ver toda la retención",
+    noActionAvailable:
+      "No hay ninguna acción de retención disponible para este cliente.",
+
+    customersNeedingAttention: "Clientes que necesitan atención",
+    recoveryQueueDescription: "Clientes en la lista de recuperación",
+    detractorFeedback: "Opiniones de detractores",
+    detractorFeedbackDescription: "Último NPS entre 0 y 6",
+    activeCases: "Casos activos",
+    activeCasesDescription: "Pendientes o en progreso",
+    resolvedCases: "Casos resueltos",
+    resolvedCasesDescription: "Seguimientos de recuperación completados",
+    recoveryOpportunities: "Oportunidades de recuperación",
+    reviewFeedback: "Revisar opiniones",
+    viewCustomers: "Ver clientes",
+    needsAttention: "Necesita atención",
+    latestNps: "Último NPS",
+    satisfaction: "Satisfacción",
+    recommendedAction: "Acción recomendada",
+    caseAlreadyOpen: "Ya tiene un caso abierto",
+
+    reason: "Motivo",
+    priority: "Prioridad",
+    low: "Baja",
+    medium: "Media",
+    high: "Alta",
+    created: "Creado",
+    resolvedOn: "Resuelto",
+    noActiveCases: "No hay casos activos.",
+    noRecoveryOpportunities:
+      "No hay oportunidades de recuperación disponibles.",
+    noResolvedCases: "No hay casos resueltos.",
+
+    newRetentionCase: "Nuevo caso de retención",
+    closeRetentionForm: "Cerrar formulario de retención",
+    createCaseDescription:
+      "Crea un caso de seguimiento para registrar la recuperación de un cliente. Cada cliente puede tener solamente un caso abierto a la vez.",
+    noAvailableCustomers: "No hay clientes disponibles",
+    noAvailableCustomersDescription:
+      "Todos los clientes activos ya tienen casos abiertos o no hay clientes disponibles.",
+    customer: "Cliente",
+    selectCustomer: "Selecciona un cliente",
+    selectAvailableCustomer: "Selecciona un cliente disponible.",
+    enterReason: "Escribe el motivo de este caso de retención.",
+    reasonTooLong: "El motivo no puede superar los 2000 caracteres.",
+    reasonPlaceholder:
+      "Describe por qué este cliente necesita seguimiento...",
+    cancel: "Cancelar",
+    creating: "Creando...",
+    unableToCreateCase: "No se pudo crear el caso de retención.",
+
+    discardChangesQuestion: "¿Descartar los cambios?",
+    createDiscardDescription:
+      "Tu caso de retención no se ha guardado. Si cierras este formulario, perderás los cambios.",
+    keepEditing: "Seguir editando",
+    discardChanges: "Descartar cambios",
+
+    phoneCall: "Llamada telefónica",
+    email: "Correo electrónico",
+    message: "Mensaje",
+    other: "Otro",
+    contacted: "Contactado",
+    noResponse: "Sin respuesta",
+    followUpNeeded: "Necesita seguimiento",
+
+    unableToLoadActivities:
+      "No se pudo cargar el historial de actividades.",
+    unexpectedActivityResponse:
+      "Se recibió una respuesta inesperada al consultar las actividades.",
+    unableToUpdateCase:
+      "No se pudo actualizar el caso de retención.",
+    caseUpdated: "Caso actualizado correctamente.",
+    unableToRecordActivity:
+      "No se pudo registrar la actividad.",
+    activityRecorded: "Actividad registrada correctamente.",
+    saveBeforeResolving:
+      "Guarda o descarta los cambios pendientes antes de resolver este caso.",
+
+    viewHistory: "Ver historial",
+    manageCase: "Gestionar caso",
+    resolvedCaseHistory: "Historial del caso resuelto",
+    manageRecoveryFollowUp: "Gestionar seguimiento de recuperación",
+    closeCaseManagement: "Cerrar gestión del caso",
+    caseDetails: "Detalles del caso",
+    caseManagement: "Gestión del caso",
+    status: "Estado",
+    saving: "Guardando...",
+    saveChanges: "Guardar cambios",
+    resolveCase: "Resolver caso",
+    activityHistory: "Historial de actividades",
+    loadingActivities: "Cargando actividades...",
+    tryAgain: "Intentar de nuevo",
+    noActivitiesRecorded: "No hay actividades registradas",
+    noActivitiesDescription:
+      "Los intentos de contacto con el cliente y sus resultados aparecerán aquí.",
+    addActivity: "Agregar actividad",
+    contactType: "Tipo de contacto",
+    outcome: "Resultado",
+    notSpecified: "No especificado",
+    notes: "Notas",
+    notesPlaceholder: "Describe la interacción con el cliente...",
+    recording: "Registrando...",
+    recordActivity: "Registrar actividad",
+    close: "Cerrar",
+
+    resolveCaseQuestion: "¿Resolver este caso?",
+    resolveCaseDescription:
+      "Este caso se marcará como resuelto y pasará a ser de solo lectura. Su historial de actividades seguirá disponible.",
+    manageDiscardDescription:
+      "Si cierras este panel, perderás los cambios que no hayas guardado.",
   },
 
   revenueRecovery: {
     title: "Ingresos recuperados",
-    noRecoveries: "Todavía no hay ingresos recuperados.",
-    noRecoveriesDescription:
-      "Los ingresos atribuidos a acciones de retención aparecerán aquí.",
+  noRecoveries: "Todavía no hay ingresos recuperados.",
+  noRecoveriesDescription:
+    "Los ingresos atribuidos a acciones de retención aparecerán aquí.",
+
+  eyebrow: "Inteligencia de negocio",
+  description:
+    "Comprende el impacto financiero de la retención de clientes, identifica ingresos en riesgo y da seguimiento a los ingresos asociados con las acciones de recuperación.",
+  manageRetention: "Gestionar retención",
+  revenueOverview: "Resumen de ingresos",
+  revenueOverviewDescription:
+    "Indicadores financieros basados en la actividad registrada del negocio.",
+  asOf: "Al",
+
+  revenueAtRisk: "Ingresos en riesgo",
+  revenueAtRiskDescription:
+    "Valor estimado de una posible visita por cada caso abierto.",
+  recoveredRevenue: "Ingresos recuperados",
+  recoveredRevenueDescription:
+    "Ingresos de visitas atribuidas explícitamente a casos de retención.",
+  openOpportunities: "Oportunidades abiertas",
+  openOpportunitiesDescription:
+    "Casos de retención que actualmente requieren seguimiento.",
+  resolvedCases: "Casos resueltos",
+  resolvedCasesDescription:
+    "Casos de retención resueltos, independientemente de la atribución de ingresos.",
+
+  recoveryOpportunities: "Oportunidades de recuperación",
+  recoveryOpportunitiesDescription:
+    "Casos de retención abiertos y su exposición estimada de ingresos.",
+  open: "abiertas",
+  noOpenOpportunities: "No hay oportunidades de recuperación abiertas",
+  noOpenOpportunitiesDescription:
+    "No hay casos de retención activos para evaluar. Las nuevas oportunidades aparecerán aquí cuando se abran casos.",
+  viewRetentionCases: "Ver casos de retención",
+  retentionCase: "Caso de retención",
+  priority: "prioridad",
+  low: "Baja",
+  medium: "Media",
+  high: "Alta",
+  pending: "Pendiente",
+  inProgress: "En progreso",
+  resolved: "Resuelto",
+  estimatedRevenueAtRisk: "Ingresos estimados en riesgo",
+  insufficientData: "Datos insuficientes",
+  noHistoricalVisits: "No hay visitas anteriores disponibles para realizar una estimación.",
+  estimatedFutureVisit:
+    "Valor estimado de una posible visita futura.",
+  manageCase: "Gestionar caso",
+
+  recoveryPerformance: "Rendimiento de recuperación",
+  recoveryPerformanceDescription:
+    "Cobertura de atribución y confianza en las estimaciones de ingresos.",
+  attributedVisits: "Visitas atribuidas",
+  attributedVisitsDescription:
+    "Visitas vinculadas a casos de retención.",
+  casesWithEstimates: "Casos con estimaciones",
+  casesWithEstimatesDescription:
+    "Casos abiertos con suficiente historial de visitas.",
+  insufficientDataCases: "Datos insuficientes",
+  insufficientDataCasesDescription:
+    "Casos abiertos sin historial de visitas.",
+  financialDisclaimer:
+    "Los ingresos en riesgo son una estimación, no un pronóstico ni una pérdida garantizada. Los ingresos recuperados representan visitas registradas y atribuidas a casos de retención; la atribución no demuestra que la acción de retención haya causado la compra.",
+
+  revenueAttribution: "Atribución de ingresos",
+  trackRecoveredRevenue: "Seguimiento de ingresos recuperados",
+  attributionDescription:
+    "Vincula una visita elegible de un cliente con un caso de retención. Cada visita solo puede atribuirse una vez.",
+  newAttribution: "Nueva atribución",
+  newAttributionDescription:
+    "Selecciona un caso de retención para encontrar visitas elegibles.",
+  selectRetentionCase: "Selecciona un caso de retención",
+  customerUnavailable: "Cliente no disponible",
+  eligibleVisit: "Visita elegible",
+  selectVisit: "Selecciona una visita",
+  noEligibleVisits:
+    "No hay visitas elegibles para este caso. La visita debe ocurrir durante el periodo del caso, tener un importe positivo y no estar atribuida a otro caso.",
+  attributionPreview: "Vista previa de atribución",
+  attributeRevenue: "Atribuir ingresos",
+  recordedAttributions: "Atribuciones registradas",
+  noAttributedRevenue: "Todavía no hay ingresos atribuidos",
+  noAttributedRevenueDescription:
+    "Las atribuciones registradas aparecerán aquí cuando vincules visitas elegibles con casos de retención.",
+  retentionCaseUnavailable: "Caso de retención no disponible",
+  visitUnavailable: "Visita no disponible",
+  amountUnavailable: "Importe no disponible",
+  removeRevenueAttribution: "Eliminar atribución de ingresos",
+
+  unableToAttribute: "No se pudieron atribuir los ingresos.",
+  unableToRemove: "No se pudo eliminar la atribución.",
+  attributionRecorded: "Atribución de ingresos registrada correctamente.",
+  attributionRemoved: "Atribución de ingresos eliminada correctamente.",
+  unexpectedError: "Ocurrió un error inesperado.",
+
+  confirmRevenueAttribution: "Confirmar atribución de ingresos",
+  removeRevenueAttributionQuestion: "¿Eliminar la atribución de ingresos?",
+  closeConfirmation: "Cerrar confirmación",
+  thisVisit: "esta visita",
+  confirmAttributionDescription:
+    "¿Atribuir {amount} al caso de retención seleccionado? Esto registra una asociación, pero no demuestra que la acción de retención haya causado la compra.",
+  removeAttributionDescription:
+    "¿Eliminar la atribución{amount}? La visita original y el caso de retención permanecerán sin cambios.",
+  cancel: "Cancelar",
+  processing: "Procesando...",
+  confirmAttribution: "Confirmar atribución",
+  removeAttribution: "Eliminar atribución",
   },
 
   intelligence: {
@@ -388,7 +893,169 @@ const es = {
     noData: "Todavía no hay suficientes datos.",
     noDataDescription:
       "Registra clientes, visitas y opiniones para generar indicadores.",
+
+    eyebrow: "Análisis de clientes",
+    description:
+      "Comprende el comportamiento de tus clientes, analiza las tendencias de su experiencia e identifica oportunidades para mejorar la retención.",
+    viewCustomers: "Ver clientes",
+
+    segmentationTitle: "Segmentación de clientes",
+    segmentationDescription:
+      "Basada en las visitas completadas y la actividad de los clientes.",
+    customer: "cliente",
+    customers: "clientes",
+    analyzed: "analizados",
+    customerShare: "Proporción de clientes",
+
+    segmentNew: "Nuevos",
+    segmentNewDescription:
+      "Clientes sin visitas completadas.",
+    segmentOneTime: "Una visita",
+    segmentOneTimeDescription:
+      "Clientes con una visita dentro del periodo de actividad.",
+    segmentReturning: "Recurrentes",
+    segmentReturningDescription:
+      "Clientes con varias visitas y actividad reciente.",
+    segmentInactive: "Inactivos",
+    segmentInactiveDescription:
+      "Clientes cuya última visita completada fue hace al menos 90 días.",
+
+    noCustomersTitle: "Todavía no hay clientes para analizar",
+    noCustomersDescription:
+      "Los segmentos aparecerán aquí cuando comiences a registrar clientes y sus visitas.",
+    goToCustomers: "Ir a Clientes",
+
+    howSegmentationWorks: "Cómo funciona la segmentación",
+    segmentationExplanationStart:
+      "Los segmentos se calculan a partir del historial de visitas, no de estados asignados manualmente. Los clientes sin visitas completadas se clasifican como Nuevos. Los clientes con visitas recientes se clasifican como Una visita o Recurrentes según su frecuencia. Los clientes cuya última visita fue hace al menos",
+    segmentationExplanationEnd:
+      "se clasifican como Inactivos.",
+    daysAgo: "días",
+    segmentationNote:
+      "Los clientes archivados y las visitas futuras se excluyen del análisis. La clasificación de riesgo se gestiona por separado de estos segmentos de comportamiento.",
+
+    trendsTitle: "Tendencias de experiencia",
+    trendsDescriptionStart:
+      "Tendencias mensuales de satisfacción y recomendación durante los últimos",
+    calendarMonths: "meses calendario",
+    satisfactionTitle: "Satisfacción del cliente",
+    satisfactionMetricDescription:
+      "Satisfacción promedio · Escala de 1 a 5",
+    npsTitle: "Net Promoter Score",
+    npsMetricDescription:
+      "Puntuación de recomendación · Escala de −100 a +100",
+    validResponses: "Respuestas válidas",
+    noTrendData: "Todavía no hay datos de tendencias",
+    noTrendDataDescription:
+      "Completa encuestas de clientes para comenzar a monitorear este indicador a lo largo del tiempo.",
+    monthlyTrend: "Tendencia mensual",
+    monthlyBreakdown: "Desglose mensual",
+    response: "respuesta",
+    responses: "respuestas",
+    reportingTimezone: "Zona horaria del informe:",
+    trendsMethodology:
+      "Solo se incluyen encuestas completadas con puntuaciones válidas. Los meses sin respuestas válidas se muestran como no disponibles, en lugar de cero. Las líneas no se conectan cuando faltan meses.",
+
+    insightsTitle: "Análisis de experiencia",
+    insightsDescription:
+      "Comprende los cambios en la experiencia de tus clientes a partir de las respuestas históricas de sus encuestas.",
+    satisfactionMovement: "Evolución de la satisfacción",
+    satisfactionMovementDescription:
+      "Cambio en la satisfacción promedio de los clientes",
+    npsMovement: "Evolución del NPS",
+    npsMovementDescription:
+      "Cambio en la puntuación de recomendación",
+    insufficientMonths:
+      "Se necesitan al menos dos meses con respuestas válidas para comparar este indicador.",
+    higher: "Mayor",
+    lower: "Menor",
+    unchanged: "Sin cambios",
+    by: "por",
+    points: "puntos",
+    scorePoints: "puntos de puntuación",
+    validResponse: "respuesta válida",
+    limitedSample:
+      "Muestra limitada: al menos uno de los meses comparados tiene menos de cinco respuestas válidas. Considera este cambio una señal preliminar, no una tendencia confirmada.",
+    comparisonNote:
+      "Comparación entre los dos meses más recientes con respuestas válidas. Estos meses pueden no ser consecutivos.",
   },
+
+  publicSurvey: {
+    eyebrow: "Tu experiencia importa",
+    title: "¿Cómo fue tu experiencia?",
+    description:
+      "Nos gustaría conocer tu opinión sobre tu visita. Tus respuestas nos ayudan a mejorar.",
+    privacyNote:
+      "Tus respuestas serán compartidas con el negocio que te atendió.",
+    requiredNote: "Las preguntas marcadas son obligatorias.",
+    required: "Obligatorio",
+    optional: "Opcional",
+
+    satisfactionQuestion:
+      "¿Qué tan satisfecho quedaste con el servicio recibido?",
+    satisfactionHelp: "Selecciona una calificación del 1 al 5.",
+    veryDissatisfied: "Muy insatisfecho",
+    verySatisfied: "Muy satisfecho",
+
+    npsQuestion:
+      "¿Qué tan probable es que recomiendes este negocio a alguien más?",
+    npsHelp: "Selecciona una puntuación del 0 al 10.",
+    notLikely: "Nada probable",
+    extremelyLikely: "Extremadamente probable",
+
+    rebookQuestion: "¿Volverías a visitarnos?",
+    rebookYes: "Sí, me gustaría volver",
+    rebookNo: "No, por ahora",
+    rebookUnsure: "Aún no lo sé",
+
+    commentQuestion: "¿Te gustaría contarnos algo más?",
+    commentPlaceholder:
+      "Cuéntanos qué te gustó o qué podríamos mejorar...",
+    commentHelp: "Máximo 2000 caracteres.",
+    charactersRemaining: "Caracteres disponibles",
+
+    submit: "Enviar mi opinión",
+    submitting: "Enviando tu opinión...",
+    loading: "Estamos preparando tu encuesta...",
+    retry: "Intentar nuevamente",
+
+    requiredAnswers:
+      "Responde las tres preguntas obligatorias antes de continuar.",
+    invalidSatisfaction:
+      "Selecciona una calificación válida del 1 al 5.",
+    invalidNps:
+      "Selecciona una puntuación válida del 0 al 10.",
+    invalidRebook:
+      "Selecciona una respuesta sobre tu intención de regresar.",
+    commentTooLong:
+      "Tu comentario no puede superar los 2000 caracteres.",
+
+    successTitle: "¡Gracias por compartir tu experiencia!",
+    successDescription:
+      "Tu opinión se registró correctamente y nos ayudará a seguir mejorando.",
+
+    completedTitle: "Ya recibimos tu opinión",
+    completedDescription:
+      "Esta encuesta ya fue respondida. Gracias por dedicar unos minutos a compartir tu experiencia.",
+
+    invalidLinkTitle: "Esta encuesta no está disponible",
+    invalidLinkDescription:
+      "El enlace no es válido o la encuesta ya no está disponible.",
+
+    loadErrorTitle: "No pudimos abrir tu encuesta",
+    loadErrorDescription:
+      "Ocurrió un problema al cargarla. Comprueba tu conexión e inténtalo nuevamente.",
+
+    submitError:
+      "No pudimos enviar tu opinión. Inténtalo nuevamente.",
+    submissionUncertain:
+      "No pudimos confirmar si tu respuesta se guardó. Verifica el estado de la encuesta antes de volver a enviarla.",
+    checkingStatus: "Verificando el estado de tu encuesta...",
+    checkStatus: "Verificar estado",
+
+    footer: "Experiencia de clientes con KAIRO",
+  },
+
 
   language: {
     label: "Idioma",

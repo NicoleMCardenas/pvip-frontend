@@ -4,6 +4,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { RebookIntent, Survey } from "@/types/survey";
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 type SurveyResponseFormProps = {
   survey: Survey;
@@ -44,6 +45,8 @@ export function SurveyResponseForm({
   onSavingChange,
 }: SurveyResponseFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
+  const copy = t.feedback;
 
   const [values, setValues] = useState<FormValues>({
     ...initialValues,
@@ -74,7 +77,7 @@ export function SurveyResponseForm({
     if (loading) return;
 
     if (survey.status !== "pending") {
-      setError("Only pending surveys can receive a new response.");
+      setError(copy.onlyPendingSurveys);
       return;
     }
 
@@ -89,7 +92,7 @@ export function SurveyResponseForm({
       rebookIntent === "" &&
       comment === ""
     ) {
-      setError("Enter at least one survey response.");
+      setError(copy.enterAtLeastOneResponse);
       return;
     }
 
@@ -97,7 +100,7 @@ export function SurveyResponseForm({
       satisfaction !== "" &&
       !/^[1-5]$/.test(satisfaction)
     ) {
-      setError("Satisfaction must be a whole number from 1 to 5.");
+      setError(copy.invalidSatisfaction);
       return;
     }
 
@@ -105,7 +108,7 @@ export function SurveyResponseForm({
       nps !== "" &&
       !/^(10|[0-9])$/.test(nps)
     ) {
-      setError("NPS must be a whole number from 0 to 10.");
+      setError(copy.invalidNps);
       return;
     }
 
@@ -113,12 +116,12 @@ export function SurveyResponseForm({
       rebookIntent !== "" &&
       !["yes", "no", "unsure"].includes(rebookIntent)
     ) {
-      setError("Select a valid rebooking intention.");
+      setError(copy.invalidRebooking);
       return;
     }
 
     if (comment.length > 2000) {
-      setError("Comment must be 2000 characters or fewer.");
+      setError(copy.commentTooLong);
       return;
     }
 
@@ -153,7 +156,7 @@ export function SurveyResponseForm({
         throw new Error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to save survey response."
+            : copy.unableToSaveResponse
         );
       }
 
@@ -163,7 +166,7 @@ export function SurveyResponseForm({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : copy.unexpectedError
       );
     } finally {
       onSavingChange(false);
@@ -181,29 +184,27 @@ export function SurveyResponseForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-xl font-semibold tracking-tight text-white">
-          Record customer feedback
+          {copy.recordCustomerFeedback}
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-slate-400">
-          Capture the customer&apos;s experience following their visit.
-          You can record a partial response when some answers are
-          unavailable.
+          {copy.recordFeedbackDescription}
         </p>
       </div>
 
       <div className="space-y-5">
         <div>
           <p className={labelClassName}>
-            Customer satisfaction (CSAT)
+            {copy.customerSatisfaction}
           </p>
 
           <p className="mb-3 text-xs text-slate-400">
-            How satisfied was the customer with the service?
+            {copy.satisfactionQuestion}
           </p>
 
           <div
             role="group"
-            aria-label="Customer satisfaction score"
+            aria-label={copy.satisfactionScoreLabel}
             className="grid grid-cols-5 gap-2"
           >
             {[1, 2, 3, 4, 5].map((score) => (
@@ -234,8 +235,8 @@ export function SurveyResponseForm({
           </div>
 
           <div className="mt-2 flex justify-between text-xs text-slate-500">
-            <span>Very dissatisfied</span>
-            <span>Very satisfied</span>
+            <span>{copy.veryDissatisfied}</span>
+            <span>{copy.verySatisfied}</span>
           </div>
         </div>
 
@@ -245,7 +246,7 @@ export function SurveyResponseForm({
           </p>
 
           <p className="mb-3 text-xs text-slate-400">
-            How likely is the customer to recommend the business?
+            {copy.npsQuestion}
           </p>
 
           <div
@@ -279,8 +280,8 @@ export function SurveyResponseForm({
           </div>
 
           <div className="mt-2 flex justify-between text-xs text-slate-500">
-            <span>Not likely</span>
-            <span>Extremely likely</span>
+            <span>{copy.notLikely}</span>
+            <span>{copy.extremelyLikely}</span>
           </div>
         </div>
 
@@ -289,7 +290,7 @@ export function SurveyResponseForm({
             htmlFor="survey-rebook"
             className={labelClassName}
           >
-            Rebooking intention
+            {copy.rebookingIntention}
           </label>
 
           <select
@@ -301,10 +302,10 @@ export function SurveyResponseForm({
             disabled={loading}
             className={inputClassName}
           >
-            <option value="">Not answered</option>
-            <option value="yes">Yes, likely to return</option>
-            <option value="no">No, unlikely to return</option>
-            <option value="unsure">Not sure yet</option>
+            <option value="">{copy.notAnswered}</option>
+            <option value="yes">{copy.likelyToReturn}</option>
+            <option value="no">{copy.unlikelyToReturn}</option>
+            <option value="unsure">{copy.notSureYet}</option>
           </select>
         </div>
 
@@ -313,7 +314,7 @@ export function SurveyResponseForm({
             htmlFor="survey-comment"
             className={labelClassName}
           >
-            Customer comment
+            {copy.customerComment}
           </label>
 
           <textarea
@@ -325,7 +326,7 @@ export function SurveyResponseForm({
               updateField("comment", event.target.value)
             }
             disabled={loading}
-            placeholder="Add any comments shared by the customer..."
+            placeholder={copy.commentPlaceholder}
             className={inputClassName}
           />
 
@@ -351,7 +352,7 @@ export function SurveyResponseForm({
           disabled={loading}
           className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
         >
-          Cancel
+          {copy.cancel}
         </button>
 
         <button
@@ -359,7 +360,7 @@ export function SurveyResponseForm({
           disabled={loading || !valuesChanged(values)}
           className="rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Saving response..." : "Save response"}
+          {loading ? copy.savingResponse : copy.saveResponse}
         </button>
       </div>
     </form>

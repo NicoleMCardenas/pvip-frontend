@@ -9,6 +9,7 @@ import {
 } from "react";
 import { MessageSquarePlus, X } from "lucide-react";
 import type { Survey } from "@/types/survey";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import { SurveyResponseForm } from "./SurveyResponseForm";
 
 type SurveyResponsePanelProps = {
@@ -20,6 +21,9 @@ export function SurveyResponsePanel({
   survey,
   customerName,
 }: SurveyResponsePanelProps) {
+  const { t } = useLanguage();
+  const copy = t.feedback;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
@@ -164,7 +168,7 @@ export function SurveyResponsePanel({
         className="inline-flex items-center gap-2 rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20"
       >
         <MessageSquarePlus size={15} aria-hidden="true" />
-        Record response
+        {copy.recordResponse}
       </button>
 
       {isOpen && (
@@ -193,7 +197,7 @@ export function SurveyResponsePanel({
                   id="survey-response-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  Survey response
+                  {copy.surveyResponse}
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-400">
@@ -206,7 +210,7 @@ export function SurveyResponsePanel({
                 type="button"
                 onClick={requestClose}
                 disabled={isSaving}
-                aria-label="Close survey response"
+                aria-label={copy.closeSurveyResponse}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <X size={20} />
@@ -238,15 +242,14 @@ export function SurveyResponsePanel({
                   id="survey-response-discard-title"
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardChangesTitle}
                 </h3>
 
                 <p
                   id="survey-response-discard-description"
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  You have unsaved survey responses.
-                  Closing this form will discard your changes.
+                  {copy.discardResponseDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -256,7 +259,7 @@ export function SurveyResponsePanel({
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -264,7 +267,7 @@ export function SurveyResponsePanel({
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

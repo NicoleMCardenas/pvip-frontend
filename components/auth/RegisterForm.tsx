@@ -5,6 +5,9 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+
 type RegisterData = {
   business_name: string;
   industry: string;
@@ -32,21 +35,51 @@ const inputClass =
 
 const labelClass = "mb-2 block text-sm font-medium text-slate-300";
 
+type RegisterError =
+  | "passwordTooShort"
+  | "passwordsDoNotMatch"
+  | "registrationError"
+  | "unexpectedError"
+  | "emailAlreadyRegistered"
+  | "businessAlreadyRegistered";
+
 export default function RegisterForm() {
   const router = useRouter();
+  const { t, language } = useLanguage();
+  const r = t.auth.register;
 
   const [form, setForm] = useState<RegisterData>(initialData);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<RegisterError | null>(null);
   const [loading, setLoading] = useState(false);
 
-  function updateField(
-    field: keyof RegisterData,
-    value: string
-  ) {
+  function updateField(field: keyof RegisterData, value: string) {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
+  }
+
+  function getErrorMessage(): string {
+    switch (error) {
+      case "passwordTooShort":
+        return r.passwordTooShort;
+      case "passwordsDoNotMatch":
+        return r.passwordsDoNotMatch;
+      case "emailAlreadyRegistered":
+        return language === "es"
+          ? "Este correo ya está registrado."
+          : "This email address is already registered.";
+      case "businessAlreadyRegistered":
+        return language === "es"
+          ? "Ya existe un negocio registrado con este correo."
+          : "A business with this email address is already registered.";
+      case "unexpectedError":
+        return t.common.unexpectedError;
+      case "registrationError":
+        return r.registrationError;
+      default:
+        return "";
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -54,15 +87,15 @@ export default function RegisterForm() {
 
     if (loading) return;
 
-    setError("");
+    setError(null);
 
     if (form.password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+      setError("passwordTooShort");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setError("Las contraseñas no coinciden.");
+      setError("passwordsDoNotMatch");
       return;
     }
 
@@ -85,23 +118,14 @@ export default function RegisterForm() {
         }),
       });
 
-      const data = await response.json().catch(() => null);
-
       if (!response.ok) {
-        throw new Error(
-          typeof data?.detail === "string"
-            ? data.detail
-            : "No fue posible crear la cuenta. Inténtalo nuevamente."
-        );
+        setError("registrationError");
+        return;
       }
 
       router.push("/login?registered=1");
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Ocurrió un error inesperado."
-      );
+    } catch {
+      setError("unexpectedError");
     } finally {
       setLoading(false);
     }
@@ -110,29 +134,35 @@ export default function RegisterForm() {
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-12 text-white">
       <div className="mx-auto w-full max-w-2xl">
-        <header className="mb-8 text-center">
-          <Link
-            href="/login"
-            className="text-3xl font-bold tracking-tight text-white"
-          >
-            KAIRO
-          </Link>
+        <header className="mb-8">
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              href="/login"
+              className="text-3xl font-bold tracking-tight text-white"
+            >
+              {t.common.appName}
+            </Link>
+
+            <LanguageSwitcher compact />
+          </div>
+
           <p className="mt-2 text-sm text-slate-400">
-            Customer Intelligence Platform
+            {t.navigation.brandSubtitle}
           </p>
         </header>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl sm:p-10">
           <div className="mb-8">
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-400">
-              Comienza con KAIRO
+              {r.eyebrow}
             </p>
+
             <h1 className="text-2xl font-semibold tracking-tight">
-              Crea tu cuenta
+              {r.title}
             </h1>
+
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              Registra tu negocio y configura tu acceso a la
-              plataforma de inteligencia de clientes.
+              {r.description}
             </p>
           </div>
 
@@ -140,18 +170,20 @@ export default function RegisterForm() {
             <section>
               <div className="mb-5 border-b border-slate-800 pb-3">
                 <h2 className="font-semibold text-white">
-                  01. Información del negocio
+                  {r.businessSection}
                 </h2>
+
                 <p className="mt-1 text-sm text-slate-400">
-                  Identifica el negocio que administrará KAIRO.
+                  {r.businessDescription}
                 </p>
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label htmlFor="business_name" className={labelClass}>
-                    Nombre del negocio
+                    {r.businessName}
                   </label>
+
                   <input
                     id="business_name"
                     name="business_name"
@@ -162,15 +194,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("business_name", event.target.value)
                     }
-                    placeholder="Ej. Studio Wellness"
+                    placeholder={r.businessNamePlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="industry" className={labelClass}>
-                    Industria o sector
+                    {r.industry}
                   </label>
+
                   <input
                     id="industry"
                     name="industry"
@@ -180,15 +213,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("industry", event.target.value)
                     }
-                    placeholder="Ej. Belleza y bienestar"
+                    placeholder={r.industryPlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="business_email" className={labelClass}>
-                    Correo del negocio
+                    {r.businessEmail}
                   </label>
+
                   <input
                     id="business_email"
                     name="business_email"
@@ -199,15 +233,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("business_email", event.target.value)
                     }
-                    placeholder="contacto@negocio.com"
+                    placeholder={r.businessEmailPlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="business_phone" className={labelClass}>
-                    Teléfono (opcional)
+                    {r.businessPhone}
                   </label>
+
                   <input
                     id="business_phone"
                     name="business_phone"
@@ -218,7 +253,7 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("business_phone", event.target.value)
                     }
-                    placeholder="Ej. 222 123 4567"
+                    placeholder={r.businessPhonePlaceholder}
                     className={inputClass}
                   />
                 </div>
@@ -228,18 +263,20 @@ export default function RegisterForm() {
             <section>
               <div className="mb-5 border-b border-slate-800 pb-3">
                 <h2 className="font-semibold text-white">
-                  02. Tu cuenta de administrador
+                  {r.ownerSection}
                 </h2>
+
                 <p className="mt-1 text-sm text-slate-400">
-                  Utilizarás estos datos para iniciar sesión.
+                  {r.ownerDescription}
                 </p>
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label htmlFor="name" className={labelClass}>
-                    Nombre completo
+                    {r.fullName}
                   </label>
+
                   <input
                     id="name"
                     name="name"
@@ -250,15 +287,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("name", event.target.value)
                     }
-                    placeholder="Tu nombre completo"
+                    placeholder={r.fullNamePlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="email" className={labelClass}>
-                    Correo para iniciar sesión
+                    {r.loginEmail}
                   </label>
+
                   <input
                     id="email"
                     name="email"
@@ -269,15 +307,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("email", event.target.value)
                     }
-                    placeholder="tu@correo.com"
+                    placeholder={r.loginEmailPlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="password" className={labelClass}>
-                    Contraseña
+                    {r.password}
                   </label>
+
                   <input
                     id="password"
                     name="password"
@@ -289,15 +328,16 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("password", event.target.value)
                     }
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={r.passwordPlaceholder}
                     className={inputClass}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="confirmPassword" className={labelClass}>
-                    Confirmar contraseña
+                    {r.confirmPassword}
                   </label>
+
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -309,7 +349,7 @@ export default function RegisterForm() {
                     onChange={(event) =>
                       updateField("confirmPassword", event.target.value)
                     }
-                    placeholder="Repite tu contraseña"
+                    placeholder={r.confirmPasswordPlaceholder}
                     className={inputClass}
                   />
                 </div>
@@ -321,7 +361,7 @@ export default function RegisterForm() {
                 role="alert"
                 className="rounded-lg border border-red-800 bg-red-950/50 p-4 text-sm text-red-300"
               >
-                {error}
+                {getErrorMessage()}
               </p>
             )}
 
@@ -331,16 +371,16 @@ export default function RegisterForm() {
                 disabled={loading}
                 className="w-full rounded-lg bg-blue-600 px-4 py-3.5 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Creando cuenta..." : "Crear mi cuenta"}
+                {loading ? r.creatingAccount : r.createAccount}
               </button>
 
               <p className="text-center text-sm text-slate-400">
-                ¿Ya tienes una cuenta?{" "}
+                {t.auth.alreadyHaveAccount}{" "}
                 <Link
                   href="/login"
                   className="font-semibold text-blue-400 transition hover:text-blue-300"
                 >
-                  Iniciar sesión
+                  {t.auth.signIn}
                 </Link>
               </p>
             </div>

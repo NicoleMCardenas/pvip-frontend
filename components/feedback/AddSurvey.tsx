@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import type { Survey } from "@/types/survey";
+import { useLanguage } from "@/components/language/LanguageProvider";
 
 type VisitOption = {
   id: string;
@@ -35,6 +36,8 @@ export function AddSurvey({
   surveys,
 }: AddSurveyProps) {
   const router = useRouter();
+  const { language, t } = useLanguage();
+  const copy = t.feedback;
 
   const [isOpen, setIsOpen] = useState(false);
   const [visitId, setVisitId] = useState("");
@@ -73,13 +76,15 @@ export function AddSurvey({
     (visit) => visit.id === visitId
   );
 
-
   function formatVisitDate(date: string) {
-    return new Intl.DateTimeFormat("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-      timeZone: "America/Mexico_City",
-    }).format(new Date(date));
+    return new Intl.DateTimeFormat(
+      language === "es" ? "es-MX" : "en-US",
+      {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "America/Mexico_City",
+      }
+    ).format(new Date(date));
   }
 
   const finishClosing = useCallback(() => {
@@ -195,7 +200,7 @@ export function AddSurvey({
     event.preventDefault();
 
     if (!selectedVisit || loading) {
-      setError("Select an available visit.");
+      setError(copy.selectAvailableVisit);
       return;
     }
 
@@ -220,7 +225,7 @@ export function AddSurvey({
         throw new Error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Unable to create survey."
+            : copy.unableToCreateSurvey
         );
       }
 
@@ -230,7 +235,7 @@ export function AddSurvey({
       setError(
         error instanceof Error
           ? error.message
-          : "Unable to create survey."
+          : copy.unableToCreateSurvey
       );
     } finally {
       setLoading(false);
@@ -246,7 +251,7 @@ export function AddSurvey({
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
       >
         <Plus size={18} aria-hidden="true" />
-        Add survey
+        {copy.addSurvey}
       </button>
 
       {isOpen && (
@@ -267,14 +272,14 @@ export function AddSurvey({
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Customer intelligence
+                  {copy.eyebrow}
                 </p>
 
                 <h2
                   id="add-survey-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  New survey
+                  {copy.newSurvey}
                 </h2>
               </div>
 
@@ -283,7 +288,7 @@ export function AddSurvey({
                 type="button"
                 onClick={requestClose}
                 disabled={loading}
-                aria-label="Close survey form"
+                aria-label={copy.closeSurveyForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={20} />
@@ -296,18 +301,16 @@ export function AddSurvey({
             >
               <div className="flex-1 space-y-6 overflow-y-auto px-6 py-7">
                 <p className="text-sm leading-relaxed text-slate-400">
-                  Create a feedback request for an existing
-                  customer visit. Each visit can have one survey.
+                  {copy.createSurveyDescription}
                 </p>
 
                 {eligibleVisits.length === 0 ? (
                   <div className="rounded-xl border border-slate-700 bg-slate-800/40 p-5">
                     <p className="font-medium text-slate-200">
-                      No eligible visits
+                      {copy.noEligibleVisits}
                     </p>
                     <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                      All existing visits already have surveys,
-                      or no visits have been recorded yet.
+                      {copy.noEligibleVisitsDescription}
                     </p>
                   </div>
                 ) : (
@@ -317,7 +320,7 @@ export function AddSurvey({
                         htmlFor="survey-visit"
                         className="mb-2 block text-sm font-medium text-slate-200"
                       >
-                        Customer visit
+                        {copy.customerVisit}
                       </label>
 
                       <select
@@ -333,12 +336,12 @@ export function AddSurvey({
                         }}
                         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500 disabled:opacity-50"
                       >
-                        <option value="">Select a visit</option>
+                        <option value="">{copy.selectVisit}</option>
 
                         {eligibleVisits.map((visit) => (
                           <option key={visit.id} value={visit.id}>
                             {clientNames.get(visit.client_id) ??
-                              "Customer unavailable"}
+                              copy.customerUnavailable}
                             {" — "}
                             {formatVisitDate(visit.visit_date)}
                           </option>
@@ -349,14 +352,15 @@ export function AddSurvey({
                     {selectedVisit && (
                       <div className="rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
                         <p className="text-xs font-semibold uppercase tracking-wider text-sky-400">
-                          Selected customer
+                          {copy.selectedCustomer}
                         </p>
                         <p className="mt-2 font-medium text-white">
                           {clientNames.get(selectedVisit.client_id) ??
-                            "Customer unavailable"}
+                            copy.customerUnavailable}
                         </p>
                         <p className="mt-1 text-sm text-slate-400">
-                          Visit: {formatVisitDate(selectedVisit.visit_date)}
+                          {copy.visitLabel}{" "}
+                          {formatVisitDate(selectedVisit.visit_date)}
                         </p>
                       </div>
                     )}
@@ -380,7 +384,7 @@ export function AddSurvey({
                   disabled={loading}
                   className="flex-1 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
                 >
-                  Cancel
+                  {copy.cancel}
                 </button>
 
                 <button
@@ -392,7 +396,7 @@ export function AddSurvey({
                   }
                   className="flex-1 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {loading ? "Creating..." : "Create survey"}
+                  {loading ? copy.creating : copy.createSurvey}
                 </button>
               </div>
             </form>
@@ -412,15 +416,14 @@ export function AddSurvey({
                   id="add-survey-discard-title"
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {copy.discardChangesTitle}
                 </h3>
 
                 <p
                   id="add-survey-discard-description"
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  Your selected visit has not been saved.
-                  Closing this form will discard your selection.
+                  {copy.discardSurveyDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -430,7 +433,7 @@ export function AddSurvey({
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {copy.keepEditing}
                   </button>
 
                   <button
@@ -438,7 +441,7 @@ export function AddSurvey({
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {copy.discardChanges}
                   </button>
                 </div>
               </div>

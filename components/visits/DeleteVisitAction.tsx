@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, X } from "lucide-react";
+import { useLanguage } from "@/components/language/LanguageProvider";
 import type { Visit } from "@/types/visit";
 
 type DeleteVisitActionProps = {
@@ -18,31 +19,47 @@ export function DeleteVisitAction({
   serviceName,
 }: DeleteVisitActionProps) {
   const router = useRouter();
+  const { language, t } = useLanguage();
+  const copy = t.visits;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState<
+    "deleteError" | "unexpectedError" | null
+  >(null);
+  const [serverError, setServerError] = useState("");
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const formattedAmount = new Intl.NumberFormat("es-MX", {
+  const locale = language === "es" ? "es-MX" : "en-US";
+
+  const formattedAmount = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "MXN",
   }).format(Number(visit.amount));
 
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
+  const formattedDate = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "America/Mexico_City",
   }).format(new Date(visit.visit_date));
 
+  const displayedError = errorKey
+    ? copy[errorKey]
+    : serverError;
+
+  function clearError() {
+    setErrorKey(null);
+    setServerError("");
+  }
+
   function closeDialog() {
     if (isDeleting) return;
 
     setIsOpen(false);
-    setError("");
+    clearError();
 
     requestAnimationFrame(() => {
       triggerRef.current?.focus();
@@ -63,7 +80,8 @@ export function DeleteVisitAction({
 
         if (!isDeleting) {
           setIsOpen(false);
-          setError("");
+          setErrorKey(null);
+          setServerError("");
 
           requestAnimationFrame(() => {
             triggerRef.current?.focus();
@@ -120,7 +138,7 @@ export function DeleteVisitAction({
     if (isDeleting) return;
 
     setIsDeleting(true);
-    setError("");
+    clearError();
 
     try {
       const response = await fetch(
@@ -133,21 +151,22 @@ export function DeleteVisitAction({
       if (!response.ok) {
         const data = await response.json().catch(() => null);
 
-        throw new Error(
-          typeof data?.detail === "string"
-            ? data.detail
-            : "Unable to delete visit."
-        );
+        if (
+          typeof data?.detail === "string" &&
+          data.detail.trim()
+        ) {
+          setServerError(data.detail);
+        } else {
+          setErrorKey("deleteError");
+        }
+
+        return;
       }
 
       setIsOpen(false);
       router.refresh();
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred."
-      );
+    } catch {
+      setErrorKey("unexpectedError");
     } finally {
       setIsDeleting(false);
     }
@@ -159,14 +178,14 @@ export function DeleteVisitAction({
         ref={triggerRef}
         type="button"
         onClick={() => {
-          setError("");
+          clearError();
           setIsOpen(true);
         }}
-        aria-label={`Delete visit for ${customerName}`}
+        aria-label={`${copy.deleteVisitFor} ${customerName}`}
         className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
       >
         <Trash2 size={14} aria-hidden="true" />
-        Delete
+        {copy.delete}
       </button>
 
       {isOpen && (
@@ -188,7 +207,7 @@ export function DeleteVisitAction({
                 type="button"
                 onClick={closeDialog}
                 disabled={isDeleting}
-                aria-label="Close confirmation"
+                aria-label={copy.closeConfirmation}
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={18} />
@@ -199,22 +218,20 @@ export function DeleteVisitAction({
               id={`delete-visit-title-${visit.id}`}
               className="mt-5 text-xl font-semibold text-white"
             >
-              Delete this visit?
+              {copy.deleteTitle}
             </h2>
 
             <p
               id={`delete-visit-description-${visit.id}`}
               className="mt-2 text-sm leading-relaxed text-slate-400"
             >
-              This action will permanently remove the visit
-              and update the customer&apos;s visit history
-              and metrics.
+              {copy.deleteDescription}
             </p>
 
             <div className="mt-5 space-y-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
               <div>
                 <p className="text-xs text-slate-500">
-                  Customer
+                  {copy.customer}
                 </p>
                 <p className="mt-1 text-sm font-medium text-white">
                   {customerName}
@@ -223,7 +240,7 @@ export function DeleteVisitAction({
 
               <div>
                 <p className="text-xs text-slate-500">
-                  Service
+                  {copy.service}
                 </p>
                 <p className="mt-1 text-sm text-slate-200">
                   {serviceName}
@@ -233,7 +250,7 @@ export function DeleteVisitAction({
               <div className="flex flex-wrap justify-between gap-3">
                 <div>
                   <p className="text-xs text-slate-500">
-                    Date
+                    {copy.date}
                   </p>
                   <p className="mt-1 text-sm text-slate-200">
                     {formattedDate}
@@ -242,7 +259,7 @@ export function DeleteVisitAction({
 
                 <div>
                   <p className="text-xs text-slate-500">
-                    Amount
+                    {copy.amount}
                   </p>
                   <p className="mt-1 text-sm font-medium text-white">
                     {formattedAmount}
@@ -251,12 +268,12 @@ export function DeleteVisitAction({
               </div>
             </div>
 
-            {error && (
+            {displayedError && (
               <p
                 role="alert"
                 className="mt-4 rounded-xl border border-rose-900 bg-rose-950/40 p-3 text-sm text-rose-300"
               >
-                {error}
+                {displayedError}
               </p>
             )}
 
@@ -268,7 +285,7 @@ export function DeleteVisitAction({
                 disabled={isDeleting}
                 className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
-                Cancel
+                {copy.cancel}
               </button>
 
               <button
@@ -278,8 +295,8 @@ export function DeleteVisitAction({
                 className="rounded-xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isDeleting
-                  ? "Deleting visit..."
-                  : "Delete visit"}
+                  ? copy.deletingVisit
+                  : copy.deleteVisit}
               </button>
             </div>
           </div>

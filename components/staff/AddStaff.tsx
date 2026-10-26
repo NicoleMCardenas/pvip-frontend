@@ -4,9 +4,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
 import { StaffForm } from "./StaffForm";
 
 export function AddStaff() {
+  const { t } = useLanguage();
+
   const [isOpen, setIsOpen] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
@@ -19,19 +22,20 @@ export function AddStaff() {
   const confirmationRef = useRef(false);
 
   function updateDirty(dirty: boolean) {
-  isDirtyRef.current = dirty;
+    isDirtyRef.current = dirty;
   }
 
   function finishClosing() {
-  isDirtyRef.current = false;
-  confirmationRef.current = false;
-  setShowDiscardConfirmation(false);
-  setIsOpen(false);
+    isDirtyRef.current = false;
+    confirmationRef.current = false;
+    setShowDiscardConfirmation(false);
+    setIsOpen(false);
 
-  requestAnimationFrame(() => {
-    triggerRef.current?.focus();
-  });
-}
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }
+
   const requestClose = useCallback(() => {
     if (isDirtyRef.current) {
       confirmationRef.current = true;
@@ -125,7 +129,7 @@ export function AddStaff() {
         className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 sm:w-auto"
       >
         <Plus size={18} strokeWidth={2} aria-hidden="true" />
-        Add team member
+        {t.staff.addStaff}
       </button>
 
       {isOpen && (
@@ -146,14 +150,14 @@ export function AddStaff() {
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-400">
-                  Team management
+                  {t.staff.eyebrow}
                 </p>
 
                 <h2
                   id="add-staff-title"
                   className="mt-1 text-lg font-semibold text-white"
                 >
-                  New team member
+                  {t.staff.newMember}
                 </h2>
               </div>
 
@@ -161,7 +165,7 @@ export function AddStaff() {
                 ref={closeButtonRef}
                 type="button"
                 onClick={requestClose}
-                aria-label="Close team member form"
+                aria-label={t.staff.closeForm}
                 className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
               >
                 <X size={20} />
@@ -191,15 +195,14 @@ export function AddStaff() {
                   id="staff-discard-title"
                   className="text-lg font-semibold text-white"
                 >
-                  Discard changes?
+                  {t.staff.discardTitle}
                 </h3>
 
                 <p
                   id="staff-discard-description"
                   className="mt-2 text-sm leading-relaxed text-slate-400"
                 >
-                  You have unsaved information. Closing this
-                  panel will discard your changes.
+                  {t.staff.discardCreateDescription}
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -209,7 +212,7 @@ export function AddStaff() {
                     onClick={cancelDiscard}
                     className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                   >
-                    Keep editing
+                    {t.staff.keepEditing}
                   </button>
 
                   <button
@@ -217,7 +220,7 @@ export function AddStaff() {
                     onClick={finishClosing}
                     className="rounded-xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
                   >
-                    Discard changes
+                    {t.staff.discardChanges}
                   </button>
                 </div>
               </div>

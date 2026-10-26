@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserRoundCheck, UserRoundX, X } from "lucide-react";
 
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 type StaffStatusActionProps = {
   staffMember: {
     id: string;
@@ -17,6 +19,7 @@ export function StaffStatusAction({
   staffMember,
 }: StaffStatusActionProps) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,15 +33,15 @@ export function StaffStatusAction({
   const isActive = staffMember.status === "active";
 
   const closeDialog = useCallback(() => {
-  if (loadingRef.current) return;
+    if (loadingRef.current) return;
 
-  setIsOpen(false);
-  setError("");
+    setIsOpen(false);
+    setError("");
 
-  requestAnimationFrame(() => {
-    triggerRef.current?.focus();
-  });
-}, []);
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -50,11 +53,10 @@ export function StaffStatusAction({
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-    event.preventDefault();
-    closeDialog();
-
-    return;
-  }
+        event.preventDefault();
+        closeDialog();
+        return;
+      }
 
       if (event.key !== "Tab") return;
 
@@ -99,11 +101,12 @@ export function StaffStatusAction({
   }, [isOpen, closeDialog]);
 
   async function handleConfirm() {
-  if (loadingRef.current) return;
+    if (loadingRef.current) return;
 
-  loadingRef.current = true;
-  setLoading(true);
-  setError("");
+    loadingRef.current = true;
+    setLoading(true);
+    setError("");
+
     try {
       const response = await fetch(
         `/api/staff/${staffMember.id}`,
@@ -127,8 +130,8 @@ export function StaffStatusAction({
           typeof data?.detail === "string"
             ? data.detail
             : isActive
-              ? "Unable to deactivate team member."
-              : "Unable to reactivate team member.";
+              ? t.staff.deactivateError
+              : t.staff.reactivateError;
 
         throw new Error(message);
       }
@@ -139,7 +142,7 @@ export function StaffStatusAction({
       setError(
         err instanceof Error
           ? err.message
-          : "An unexpected error occurred."
+          : t.staff.unexpectedError
       );
     } finally {
       loadingRef.current = false;
@@ -169,7 +172,7 @@ export function StaffStatusAction({
           <UserRoundCheck size={14} aria-hidden="true" />
         )}
 
-        {isActive ? "Deactivate" : "Reactivate"}
+        {isActive ? t.staff.deactivate : t.staff.reactivate}
       </button>
 
       {isOpen && (
@@ -188,15 +191,15 @@ export function StaffStatusAction({
                 className="text-lg font-semibold text-white"
               >
                 {isActive
-                  ? "Deactivate team member?"
-                  : "Reactivate team member?"}
+                  ? t.staff.deactivateTitle
+                  : t.staff.reactivateTitle}
               </h2>
 
               <button
                 type="button"
                 onClick={closeDialog}
                 disabled={loading}
-                aria-label="Close confirmation"
+                aria-label={t.staff.closeConfirmation}
                 className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
               >
                 <X size={18} />
@@ -207,24 +210,12 @@ export function StaffStatusAction({
               id={`staff-status-description-${staffMember.id}`}
               className="mt-3 text-sm leading-relaxed text-slate-400"
             >
-              {isActive ? (
-                <>
-                  <span className="font-medium text-white">
-                    {staffMember.name}
-                  </span>{" "}
-                  will no longer be available for new customer
-                  visits. Their profile and visit history will
-                  be preserved.
-                </>
-              ) : (
-                <>
-                  <span className="font-medium text-white">
-                    {staffMember.name}
-                  </span>{" "}
-                  will become active again and can be assigned
-                  to new customer visits.
-                </>
-              )}
+              <span className="font-medium text-white">
+                {staffMember.name}
+              </span>{" "}
+              {isActive
+                ? t.staff.deactivateDescription
+                : t.staff.reactivateDescription}
             </p>
 
             {error && (
@@ -244,7 +235,7 @@ export function StaffStatusAction({
                 disabled={loading}
                 className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-50"
               >
-                Cancel
+                {t.staff.cancel}
               </button>
 
               <button
@@ -260,11 +251,11 @@ export function StaffStatusAction({
               >
                 {loading
                   ? isActive
-                    ? "Deactivating..."
-                    : "Reactivating..."
+                    ? t.staff.deactivating
+                    : t.staff.reactivating
                   : isActive
-                    ? "Deactivate member"
-                    : "Reactivate member"}
+                    ? t.staff.deactivateMember
+                    : t.staff.reactivateMember}
               </button>
             </div>
           </div>

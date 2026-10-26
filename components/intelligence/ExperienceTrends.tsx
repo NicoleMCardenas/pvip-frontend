@@ -1,3 +1,8 @@
+
+"use client";
+
+import { useLanguage } from "@/components/language/LanguageProvider";
+
 import type {
   ExperienceTrend,
   ExperienceTrendsResponse,
@@ -14,25 +19,6 @@ type MetricConfig = {
   color: string;
 };
 
-const metrics: MetricConfig[] = [
-  {
-    title: "Customer Satisfaction",
-    description: "Average satisfaction score · Scale 1–5",
-    metric: "satisfaction",
-    min: 1,
-    max: 5,
-    color: "#38bdf8",
-  },
-  {
-    title: "Net Promoter Score",
-    description: "Customer recommendation score · Scale −100 to +100",
-    metric: "nps",
-    min: -100,
-    max: 100,
-    color: "#a78bfa",
-  },
-];
-
 function getValue(item: ExperienceTrend, metric: Metric) {
   return metric === "satisfaction"
     ? item.average_satisfaction
@@ -45,10 +31,10 @@ function getResponses(item: ExperienceTrend, metric: Metric) {
     : item.nps_responses;
 }
 
-function formatMonth(month: string) {
+function formatMonth(month: string, locale: string) {
   const [year, monthNumber] = month.split("-").map(Number);
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     year: "2-digit",
     timeZone: "UTC",
@@ -64,9 +50,22 @@ function formatValue(value: number, metric: Metric) {
 function MetricChart({
   trends,
   config,
+  locale,
+  labels,
 }: {
   trends: ExperienceTrend[];
   config: MetricConfig;
+  locale: string;
+  labels: {
+    validResponses: string;
+    validResponse: string;
+    noTrendData: string;
+    noTrendDataDescription: string;
+    monthlyTrend: string;
+    monthlyBreakdown: string;
+    response: string;
+    responses: string;
+  };
 }) {
   const chartWidth = 720;
   const chartHeight = 240;
@@ -152,7 +151,7 @@ function MetricChart({
           </p>
 
           <p className="text-xs text-slate-500">
-            Valid responses
+            {labels.validResponses}
           </p>
         </div>
       </div>
@@ -160,12 +159,11 @@ function MetricChart({
       {!hasData ? (
         <div className="mt-6 flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950/40 px-5 text-center">
           <p className="text-sm font-medium text-slate-200">
-            No trend data available yet
+            {labels.noTrendData}
           </p>
 
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
-            Complete customer surveys to start tracking this
-            metric over time.
+            {labels.noTrendDataDescription}
           </p>
         </div>
       ) : (
@@ -174,7 +172,7 @@ function MetricChart({
             <svg
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
               role="img"
-              aria-label={`${config.title} monthly trend`}
+              aria-label={`${config.title} · ${labels.monthlyTrend}`}
               className="min-w-[560px] w-full"
             >
               {gridValues.map((value) => {
@@ -243,10 +241,17 @@ function MetricChart({
                     strokeWidth="2"
                   >
                     <title>
-                      {`${formatMonth(point.month)}: ${formatValue(
+                      {`${formatMonth(
+                        point.month,
+                        locale
+                      )}: ${formatValue(
                         point.value!,
                         config.metric
-                      )} · ${point.responses} valid responses`}
+                      )} · ${point.responses} ${
+                        point.responses === 1
+                          ? labels.validResponse
+                          : labels.validResponses.toLowerCase()
+                      }`}
                     </title>
                   </circle>
                 )
@@ -262,7 +267,7 @@ function MetricChart({
                     fill="#94a3b8"
                     fontSize="10"
                   >
-                    {formatMonth(point.month)}
+                    {formatMonth(point.month, locale)}
                   </text>
                 ) : null
               )}
@@ -271,7 +276,7 @@ function MetricChart({
 
           <div className="mt-5 border-t border-slate-800 pt-4">
             <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
-              Monthly breakdown
+              {labels.monthlyBreakdown}
             </p>
 
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
@@ -281,7 +286,7 @@ function MetricChart({
                   className="rounded-lg bg-slate-950/60 px-3 py-2"
                 >
                   <p className="text-xs text-slate-500">
-                    {formatMonth(point.month)}
+                    {formatMonth(point.month, locale)}
                   </p>
 
                   <p className="mt-1 text-sm font-semibold tabular-nums text-white">
@@ -293,8 +298,8 @@ function MetricChart({
                   <p className="mt-1 text-xs text-slate-500">
                     {point.responses}{" "}
                     {point.responses === 1
-                      ? "response"
-                      : "responses"}
+                      ? labels.response
+                      : labels.responses}
                   </p>
                 </div>
               ))}
@@ -311,6 +316,40 @@ export default function ExperienceTrends({
 }: {
   data: ExperienceTrendsResponse;
 }) {
+  const { language, t } = useLanguage();
+  const copy = t.intelligence;
+  const locale = language === "es" ? "es-MX" : "en-US";
+
+  const metrics: MetricConfig[] = [
+    {
+      title: copy.satisfactionTitle,
+      description: copy.satisfactionMetricDescription,
+      metric: "satisfaction",
+      min: 1,
+      max: 5,
+      color: "#38bdf8",
+    },
+    {
+      title: copy.npsTitle,
+      description: copy.npsMetricDescription,
+      metric: "nps",
+      min: -100,
+      max: 100,
+      color: "#a78bfa",
+    },
+  ];
+
+  const labels = {
+    validResponses: copy.validResponses,
+    validResponse: copy.validResponse,
+    noTrendData: copy.noTrendData,
+    noTrendDataDescription: copy.noTrendDataDescription,
+    monthlyTrend: copy.monthlyTrend,
+    monthlyBreakdown: copy.monthlyBreakdown,
+    response: copy.response,
+    responses: copy.responses,
+  };
+
   return (
     <section
       aria-labelledby="experience-trends-heading"
@@ -321,12 +360,12 @@ export default function ExperienceTrends({
           id="experience-trends-heading"
           className="text-xl font-semibold tracking-tight text-white sm:text-2xl"
         >
-          Experience Trends
+          {copy.trendsTitle}
         </h2>
 
         <p className="mt-1 text-sm text-slate-400">
-          Monthly satisfaction and recommendation trends across
-          the last {data.period_months} calendar months.
+          {copy.trendsDescriptionStart}{" "}
+          {data.period_months} {copy.calendarMonths}.
         </p>
       </div>
 
@@ -336,15 +375,15 @@ export default function ExperienceTrends({
             key={config.metric}
             trends={data.trends}
             config={config}
+            locale={locale}
+            labels={labels}
           />
         ))}
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        Reporting timezone: {data.timezone}. Only completed
-        surveys with valid scores are included. Months without
-        valid responses are shown as unavailable rather than
-        zero. Lines are not connected across missing months.
+        {copy.reportingTimezone} {data.timezone}.{" "}
+        {copy.trendsMethodology}
       </p>
     </section>
   );
