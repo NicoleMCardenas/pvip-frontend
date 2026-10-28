@@ -60,6 +60,47 @@ const en = {
     loggingOut: "Signing out...",
     logoutError: "Unable to sign out. Please try again.",
 
+    forgotPassword: {
+      title: "Forgot your password?",
+      description:
+        "Enter the email address associated with your account. If it is registered, you will receive a link to set a new password.",
+      success:
+        "If the email is registered, you will receive instructions to reset your password. Please also check your spam folder.",
+      email: "Email address",
+      emailPlaceholder: "email@example.com",
+      sending: "Sending...",
+      submit: "Send instructions",
+      backToLogin: "Back to sign in",
+      requestError: "We couldn't process your request.",
+      unexpectedError: "An unexpected error occurred.",
+    },
+
+    resetPassword: {
+      title: "Create a new password",
+      description: "Choose a password with at least 8 characters.",
+      newPassword: "New password",
+      confirmPassword: "Confirm new password",
+      save: "Save new password",
+      saving: "Updating...",
+      backToLogin: "Back to sign in",
+      passwordTooShort:
+        "Your password must be at least 8 characters long.",
+      passwordsDoNotMatch: "Passwords do not match.",
+      requestError: "Unable to update your password.",
+      unexpectedError: "An unexpected error occurred.",
+      invalidOrExpired:
+        "The password reset link is invalid or has expired.",
+      successTitle: "Password updated",
+      successDescription:
+        "Your password was updated successfully. You can now sign in with your new password.",
+      signIn: "Sign in",
+      invalidLinkTitle: "Invalid link",
+      invalidLinkDescription:
+        "We couldn't find a valid password reset link. Request a new one to continue.",
+      requestNewLink: "Request a new link",
+      loading: "Loading password recovery...",
+    },
+
     register: {
       eyebrow: "Get started with KAIRO",
       title: "Create your account",
@@ -145,6 +186,8 @@ const en = {
     scoreNote:
       "These scores reflect the latest completed survey when available. A positive score does not automatically change a customer's risk status.",
     recommendedAction: "Recommended action",
+    contactClientFollowUp:
+  "Contact client and offer recovery follow-up",
     manageRetention: "Manage retention",
   },
 
@@ -473,7 +516,7 @@ const en = {
       "A customer, service, and team member are required.",
     requiredFieldsError: "Complete all required fields.",
     invalidDateError:
-      "Visit date must be valid and cannot be in the future.",
+      "Check the visit date and year. Enter a valid date that is not in the future.",
     invalidAmountError:
       "Enter a valid amount of zero or greater.",
 
@@ -1062,6 +1105,53 @@ const en = {
 
     footer: "Customer experience powered by KAIRO",
   },
+
+  settings: {
+    eyebrow: "ADMINISTRATION",
+    title: "Settings",
+    description:
+      "Manage your business information and preferences.",
+
+    businessSection: "Business information",
+    businessDescription:
+      "View and keep your business details up to date.",
+
+    businessName: "Business name",
+    industry: "Industry",
+    email: "Email address",
+    phone: "Phone number",
+    optional: "Optional",
+
+    edit: "Edit information",
+    save: "Save changes",
+    saving: "Saving changes...",
+    cancel: "Cancel",
+
+    savedTitle: "Changes saved",
+    savedDescription:
+      "Your business information was updated successfully.",
+
+    requiredField: "This field is required.",
+    invalidEmail: "Enter a valid email address.",
+    duplicateEmail:
+      "This email address is already registered to another business.",
+
+    loadError:
+      "We couldn't load your business information.",
+    saveError:
+      "We couldn't save your changes. Please try again.",
+    permissionError:
+      "You don't have permission to edit business information.",
+    sessionExpired:
+      "Your session has expired. Please log in again.",
+
+    ownerOnly:
+      "Only the business owner can edit this information.",
+    noChanges: "There are no pending changes.",
+    unsavedChanges:
+      "You have unsaved changes. Do you want to discard them?",
+  },
+
 
 
   language: {

@@ -198,6 +198,20 @@ function CaseCard({
   );
 }
 
+function translateRecommendedAction(
+  action: string,
+  translation: string,
+) {
+  if (
+    action ===
+    "Contact client and offer recovery follow-up"
+  ) {
+    return translation;
+  }
+
+  return action;
+}
+
 export default function RetentionPageContent({
   selectedCustomerId,
   recoveryClients,
@@ -573,7 +587,10 @@ export default function RetentionPageContent({
                     </div>
 
                     <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                      {client.recommended_action}
+                      {translateRecommendedAction(
+  client.recommended_action,
+  t.recoveryQueue.contactClientFollowUp,
+)}
                     </p>
                   </div>
 

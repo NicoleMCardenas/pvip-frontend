@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -318,6 +317,7 @@ export function CreateRetentionCase({
 
             <form
               onSubmit={handleSubmit}
+              noValidate
               className="flex flex-1 flex-col overflow-hidden"
             >
               <div className="flex-1 space-y-6 overflow-y-auto px-6 py-7">
@@ -396,6 +396,12 @@ export function CreateRetentionCase({
 
                       <textarea
                         id="retention-reason"
+                        aria-invalid={error === copy.enterReason}
+                        aria-describedby={
+                          error === copy.enterReason
+                            ? "retention-reason-error"
+                            : undefined
+                        }
                         required
                         maxLength={2000}
                         rows={5}
@@ -414,6 +420,16 @@ export function CreateRetentionCase({
                         placeholder={copy.reasonPlaceholder}
                         className="w-full resize-y rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-500 disabled:opacity-50"
                       />
+
+                      {error === copy.enterReason && (
+                        <p
+                          id="retention-reason-error"
+                          role="alert"
+                          className="mt-2 text-sm text-rose-300"
+                        >
+                          {error}
+                        </p>
+                      )}
 
                       <p className="mt-2 text-right text-xs text-slate-500">
                         {reason.length} / 2000
@@ -455,7 +471,7 @@ export function CreateRetentionCase({
                   </>
                 )}
 
-                {error && (
+                {error && error !== copy.enterReason && (
                   <div
                     role="alert"
                     className="rounded-xl border border-rose-800/60 bg-rose-950/30 px-4 py-3 text-sm text-rose-300"
@@ -479,8 +495,7 @@ export function CreateRetentionCase({
                   type="submit"
                   disabled={
                     loading ||
-                    !selectedCustomer ||
-                    !reason.trim()
+                    !selectedCustomer
                   }
                   className="flex-1 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >

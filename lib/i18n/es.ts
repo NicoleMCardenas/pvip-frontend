@@ -60,6 +60,48 @@ const es = {
     loggingOut: "Cerrando sesión...",
     logoutError: "No fue posible cerrar sesión. Inténtalo nuevamente.",
 
+    forgotPassword: {
+      title: "Recuperar contraseña",
+      description:
+        "Ingresa el correo asociado a tu cuenta. Si está registrado, recibirás un enlace para establecer una nueva contraseña.",
+      success:
+        "Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña. Revisa también tu carpeta de correo no deseado.",
+      email: "Correo electrónico",
+      emailPlaceholder: "correo@ejemplo.com",
+      sending: "Enviando...",
+      submit: "Enviar instrucciones",
+      backToLogin: "Volver a iniciar sesión",
+      requestError: "No fue posible procesar la solicitud.",
+      unexpectedError: "Ocurrió un error inesperado.",
+    },
+
+    resetPassword: {
+      title: "Crear nueva contraseña",
+      description: "Elige una contraseña de al menos 8 caracteres.",
+      newPassword: "Nueva contraseña",
+      confirmPassword: "Confirmar nueva contraseña",
+      save: "Guardar nueva contraseña",
+      saving: "Actualizando...",
+      backToLogin: "Volver a iniciar sesión",
+      passwordTooShort:
+        "La contraseña debe tener al menos 8 caracteres.",
+      passwordsDoNotMatch: "Las contraseñas no coinciden.",
+      requestError: "No fue posible actualizar la contraseña.",
+      unexpectedError: "Ocurrió un error inesperado.",
+      invalidOrExpired:
+        "El enlace de recuperación no es válido o ha expirado.",
+      successTitle: "Contraseña actualizada",
+      successDescription:
+        "Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión con tu nueva contraseña.",
+      signIn: "Iniciar sesión",
+      invalidLinkTitle: "Enlace no válido",
+      invalidLinkDescription:
+        "No encontramos un enlace de recuperación válido. Solicita uno nuevo para continuar.",
+      requestNewLink: "Solicitar nuevo enlace",
+      loading: "Cargando recuperación de contraseña...",
+    },
+
+
     register: {
       eyebrow: "Comienza con KAIRO",
       title: "Crea tu cuenta",
@@ -144,6 +186,8 @@ const es = {
     scoreNote:
       "Estas puntuaciones corresponden a la última encuesta completada, cuando está disponible. Una puntuación positiva no cambia automáticamente el estado de riesgo del cliente.",
     recommendedAction: "Acción recomendada",
+    contactClientFollowUp:
+  "Contactar al cliente y ofrecer seguimiento para recuperar su confianza.",
     manageRetention: "Gestionar retención",
   },
 
@@ -471,7 +515,7 @@ const es = {
       "Se necesita un cliente, un servicio y un miembro del equipo.",
     requiredFieldsError: "Completa todos los campos obligatorios.",
     invalidDateError:
-      "La fecha de la visita debe ser válida y no puede ser futura.",
+      "Revisa la fecha y el año de la visita. Introduce una fecha válida que no sea futura.",
     invalidAmountError:
       "Introduce un importe válido igual o mayor que cero.",
 
@@ -1055,6 +1099,53 @@ const es = {
 
     footer: "Experiencia de clientes con KAIRO",
   },
+
+  settings: {
+    eyebrow: "ADMINISTRACIÓN",
+    title: "Configuración",
+    description:
+      "Administra la información y las preferencias de tu negocio.",
+
+    businessSection: "Información del negocio",
+    businessDescription:
+      "Consulta y mantén actualizados los datos de tu negocio.",
+
+    businessName: "Nombre del negocio",
+    industry: "Industria",
+    email: "Correo electrónico",
+    phone: "Teléfono",
+    optional: "Opcional",
+
+    edit: "Editar información",
+    save: "Guardar cambios",
+    saving: "Guardando cambios...",
+    cancel: "Cancelar",
+
+    savedTitle: "Cambios guardados",
+    savedDescription:
+      "La información del negocio se actualizó correctamente.",
+
+    requiredField: "Este campo es obligatorio.",
+    invalidEmail: "Introduce un correo electrónico válido.",
+    duplicateEmail:
+      "Este correo electrónico ya está registrado en otro negocio.",
+
+    loadError:
+      "No pudimos cargar la información del negocio.",
+    saveError:
+      "No pudimos guardar los cambios. Inténtalo nuevamente.",
+    permissionError:
+      "No tienes permisos para modificar la información del negocio.",
+    sessionExpired:
+      "Tu sesión ha expirado. Inicia sesión nuevamente.",
+
+    ownerOnly:
+      "Solo el propietario del negocio puede modificar esta información.",
+    noChanges: "No hay cambios pendientes.",
+    unsavedChanges:
+      "Tienes cambios sin guardar. ¿Quieres descartarlos?",
+  },
+
 
 
   language: {

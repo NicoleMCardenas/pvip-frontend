@@ -19,6 +19,7 @@ import {
 
 import { useLanguage } from "@/components/language/LanguageProvider";
 import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+import { useUnsavedChanges } from "@/components/navigation/UnsavedChangesProvider";
 import type { Translations } from "@/lib/i18n";
 
 type NavigationKey = keyof Translations["navigation"];
@@ -86,10 +87,39 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
 
+  const {
+    hasUnsavedChanges,
+    requestNavigation,
+  } = useUnsavedChanges();
+
+  function handleNavigation(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    destination: string
+  ) {
+    if (
+      !hasUnsavedChanges ||
+      destination === pathname ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    requestNavigation(destination);
+  }
+
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-950 px-4 py-6">
       <div className="mb-10 px-3">
-        <Link href="/" className="block">
+        <Link
+          href="/"
+          onClick={(event) => handleNavigation(event, "/")}
+          className="block"
+        >
           <span className="text-2xl font-bold tracking-tight text-white">
             KAIRO
           </span>
@@ -102,7 +132,7 @@ export default function Sidebar() {
 
       <nav
         aria-label={t.navigation.mainNavigation}
-        className="min-h-0 flex-1 space-y-1 overflow-y-auto"
+        className="min-h-0 flex-1 space-y-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#475569_#020617]"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
@@ -117,6 +147,9 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(event) =>
+                handleNavigation(event, item.href)
+              }
               aria-current={isActive ? "page" : undefined}
               className={[
                 "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
@@ -140,15 +173,15 @@ export default function Sidebar() {
       <div className="mt-4 space-y-4 border-t border-slate-800 px-3 pt-5">
         <LanguageSwitcher />
 
-       <div>
-        <p className="text-xs font-medium text-slate-300">
-          {t.navigation.platformLabel}
-        </p>
+        <div>
+          <p className="text-xs font-medium text-slate-300">
+            {t.navigation.platformLabel}
+          </p>
 
-        <p className="mt-1 text-xs text-slate-500">
-          {t.navigation.platformDescription}
-        </p>
-      </div>
+          <p className="mt-1 text-xs text-slate-500">
+            {t.navigation.platformDescription}
+          </p>
+        </div>
       </div>
     </aside>
   );

@@ -9,6 +9,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered") === "1";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -66,15 +67,17 @@ export default function LoginForm() {
         <h2 className="mb-6 text-xl font-semibold text-white">
           Iniciar sesión
         </h2>
-              {registered && (
-        <div
-          role="status"
-          className="mb-6 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4 text-sm text-emerald-300"
-        >
-          Tu cuenta se creó correctamente. Ya puedes iniciar sesión
-          con tu correo y contraseña.
-        </div>
-      )}
+
+        {registered && (
+          <div
+            role="status"
+            className="mb-6 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4 text-sm text-emerald-300"
+          >
+            Tu cuenta se creó correctamente. Ya puedes iniciar sesión
+            con tu correo y contraseña.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
@@ -114,6 +117,15 @@ export default function LoginForm() {
               placeholder="Ingresa tu contraseña"
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-blue-500"
             />
+          </div>
+
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm font-medium text-blue-400 transition hover:text-blue-300"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           {error && (

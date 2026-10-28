@@ -231,8 +231,11 @@ export function VisitForm({
     }
 
     const selectedDate = new Date(values.visitDate);
+    const year = Number(values.visitDate.split("-")[0]);
 
     if (
+      !Number.isInteger(year) ||
+      year < 1000 ||
       Number.isNaN(selectedDate.getTime()) ||
       selectedDate.getTime() > Date.now()
     ) {
