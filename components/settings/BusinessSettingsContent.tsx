@@ -53,6 +53,16 @@ function normalize(values: FormValues): FormValues {
   };
 }
 
+function isFormValues(value: unknown): value is FormValues {
+  if (typeof value !== "object" || value === null) return false;
+
+  const fields = value as Record<string, unknown>;
+
+  return ["name", "industry", "email", "phone"].every(
+    (key) => typeof fields[key] === "string"
+  );
+}
+
 export default function BusinessSettingsContent({
   business: initialBusiness,
   user,
@@ -69,6 +79,7 @@ export default function BusinessSettingsContent({
   } = useUnsavedChanges();
 
   const isOwner = user.role === "owner";
+  const draftKey = `kairo:settings-draft:${user.id}:${initialBusiness.id}`;
 
   const [business, setBusiness] = useState(initialBusiness);
   const [values, setValues] = useState<FormValues>(
@@ -80,6 +91,7 @@ export default function BusinessSettingsContent({
   const [success, setSuccess] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] =
     useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
 
   const discardCancelRef = useRef<HTMLButtonElement>(null);
   const discardDialogRef = useRef<HTMLDivElement>(null);
@@ -98,12 +110,73 @@ export default function BusinessSettingsContent({
   const isConfirmationOpen =
     showDiscardConfirmation || isNavigationConfirmation;
 
-  // Share the form's dirty state with the dashboard navigation.
+  // Restore a draft only for the same user, business and baseline.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+
+      if (raw && isOwner) {
+        const parsed: unknown = JSON.parse(raw);
+
+        if (typeof parsed === "object" && parsed !== null) {
+          const draft = parsed as Record<string, unknown>;
+
+          if (
+            isFormValues(draft.values) &&
+            isFormValues(draft.original) &&
+            JSON.stringify(normalize(draft.original)) ===
+              JSON.stringify(normalize(toFormValues(initialBusiness)))
+          ) {
+            setValues(draft.values);
+            setEditing(true);
+          } else {
+            sessionStorage.removeItem(draftKey);
+          }
+        } else {
+          sessionStorage.removeItem(draftKey);
+        }
+      }
+    } catch {
+      // Storage may be unavailable or contain invalid data.
+    } finally {
+      setDraftLoaded(true);
+    }
+  }, [draftKey, initialBusiness, isOwner]);
+
+  // Save genuine edits after draft recovery has completed.
+  useEffect(() => {
+    if (!draftLoaded || !isOwner) return;
+
+    try {
+      if (hasPendingChanges) {
+        sessionStorage.setItem(
+          draftKey,
+          JSON.stringify({
+            original: toFormValues(business),
+            values,
+          })
+        );
+      } else {
+        sessionStorage.removeItem(draftKey);
+      }
+    } catch {
+      // Storage is best-effort; editing still works.
+    }
+  }, [
+    draftLoaded,
+    draftKey,
+    isOwner,
+    hasPendingChanges,
+    business,
+    values,
+  ]);
+
+  // Share the form's dirty state with dashboard navigation.
   useEffect(() => {
     setHasUnsavedChanges(hasPendingChanges);
   }, [hasPendingChanges, setHasUnsavedChanges]);
 
-  // Clear the shared state when Settings is unmounted.
+  // Clear shared state when Settings is unmounted.
   useEffect(() => {
     return () => {
       setHasUnsavedChanges(false);
@@ -212,6 +285,12 @@ export default function BusinessSettingsContent({
   }
 
   function discardChanges() {
+    try {
+      sessionStorage.removeItem(draftKey);
+    } catch {
+      // Storage may be unavailable.
+    }
+
     setValues(toFormValues(business));
     setEditing(false);
     setShowDiscardConfirmation(false);
@@ -249,6 +328,12 @@ export default function BusinessSettingsContent({
 
   function handleDiscardConfirmation() {
     if (isNavigationConfirmation) {
+      try {
+        sessionStorage.removeItem(draftKey);
+      } catch {
+        // Storage may be unavailable.
+      }
+
       setHasUnsavedChanges(false);
       confirmNavigation();
       return;
@@ -310,6 +395,12 @@ export default function BusinessSettingsContent({
       }
 
       const updatedBusiness = data as Business;
+
+      try {
+        sessionStorage.removeItem(draftKey);
+      } catch {
+        // Storage may be unavailable.
+      }
 
       setBusiness(updatedBusiness);
       setValues(toFormValues(updatedBusiness));
