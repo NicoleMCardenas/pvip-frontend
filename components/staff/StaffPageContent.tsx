@@ -5,16 +5,19 @@ import { Users, UserRoundCheck, UserRoundX } from "lucide-react";
 
 import { useLanguage } from "@/components/language/LanguageProvider";
 import { AddStaff } from "./AddStaff";
+import { InviteStaff } from "./InviteStaff";
 import { EditStaffPanel } from "./EditStaffPanel";
 import { StaffStatusAction } from "./StaffStatusAction";
 import type { StaffMember } from "./StaffForm";
 
 type StaffPageContentProps = {
   staff: StaffMember[];
+  isOwner: boolean;
 };
 
 export function StaffPageContent({
   staff,
+  isOwner,
 }: StaffPageContentProps) {
   const { t } = useLanguage();
 
@@ -211,6 +214,7 @@ export function StaffPageContent({
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <EditStaffPanel staffMember={member} />
+                          {isOwner && <InviteStaff staffMember={member} />}
                           <StaffStatusAction staffMember={member} />
                         </div>
                       </td>

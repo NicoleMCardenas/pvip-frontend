@@ -101,6 +101,33 @@ const es = {
       loading: "Cargando recuperación de contraseña...",
     },
 
+    acceptInvitation: {
+      title: "Activa tu cuenta",
+      description:
+        "Has sido invitado a formar parte de un equipo en KAIRO. Crea una contraseña para activar tu acceso.",
+      newPassword: "Crea tu contraseña",
+      confirmPassword: "Confirma tu contraseña",
+      activate: "Activar mi cuenta",
+      activating: "Activando cuenta...",
+      passwordTooShort:
+        "La contraseña debe tener al menos 8 caracteres.",
+      passwordsDoNotMatch: "Las contraseñas no coinciden.",
+      invalidOrExpired:
+        "Esta invitación no es válida, ya fue utilizada o ha expirado.",
+      invalidLinkTitle: "Enlace no válido",
+      invalidLinkDescription:
+        "No encontramos una invitación válida. Solicita al administrador de tu negocio que te envíe una nueva.",
+      requestError:
+        "No fue posible activar tu cuenta. Inténtalo nuevamente.",
+      unexpectedError: "Ocurrió un error inesperado.",
+      successTitle: "Tu cuenta está lista",
+      successDescription:
+        "Tu cuenta se activó correctamente. Ya puedes iniciar sesión en KAIRO con tu correo y contraseña.",
+      signIn: "Iniciar sesión",
+      backToLogin: "Volver a iniciar sesión",
+      loading: "Cargando invitación...",
+    },
+
 
     register: {
       eyebrow: "Comienza con KAIRO",
@@ -373,6 +400,38 @@ const es = {
     reactivating: "Reactivando...",
     deactivateError: "No fue posible desactivar al integrante.",
     reactivateError: "No fue posible reactivar al integrante.",
+
+    inviteMember: "Invitar",
+    inviteTitle: "Invitar a KAIRO",
+    inviteDescription:
+      "Envía una invitación para que este profesional cree su contraseña y acceda a KAIRO.",
+    inviteRecipient: "Profesional",
+    inviteEmail: "Correo de invitación",
+    inviteEmailRequired:
+      "Este profesional no tiene un correo registrado. Agrégalo desde la opción de edición antes de invitarlo.",
+    inviteInactive:
+      "Solo puedes invitar a profesionales activos.",
+    inviteConfirm: "Enviar invitación",
+    inviting: "Enviando invitación...",
+    inviteCancel: "Cancelar",
+    inviteClose: "Cerrar",
+    inviteAcceptedTitle: "Invitación procesada",
+    inviteAcceptedDescription:
+      "El servicio de correo aceptó la invitación. Esto no garantiza que ya haya llegado a la bandeja del destinatario.",
+    inviteUncertainTitle: "Envío sin confirmar",
+    inviteUncertainDescription:
+      "No pudimos confirmar el envío. Comprueba si el profesional recibió el correo antes de intentar nuevamente.",
+    inviteRejectedTitle: "No se pudo enviar",
+    inviteRejectedDescription:
+      "El servicio de correo rechazó la invitación. No se ha confirmado su envío.",
+    inviteSessionExpired:
+      "Tu sesión ha expirado. Inicia sesión nuevamente.",
+    inviteForbidden:
+      "Solo el propietario del negocio puede enviar invitaciones.",
+    inviteError:
+      "No fue posible enviar la invitación. Inténtalo nuevamente.",
+    inviteUnexpectedError:
+      "Ocurrió un error inesperado al enviar la invitación.",
   },
 
   services: {

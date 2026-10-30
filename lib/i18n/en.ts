@@ -101,6 +101,33 @@ const en = {
       loading: "Loading password recovery...",
     },
 
+    acceptInvitation: {
+      title: "Activate your account",
+      description:
+        "You've been invited to join a team on KAIRO. Create a password to activate your access.",
+      newPassword: "Create your password",
+      confirmPassword: "Confirm your password",
+      activate: "Activate my account",
+      activating: "Activating account...",
+      passwordTooShort:
+        "Your password must be at least 8 characters long.",
+      passwordsDoNotMatch: "Passwords do not match.",
+      invalidOrExpired:
+        "This invitation is invalid, has already been used, or has expired.",
+      invalidLinkTitle: "Invalid link",
+      invalidLinkDescription:
+        "We couldn't find a valid invitation. Ask your business administrator to send you a new one.",
+      requestError:
+        "Unable to activate your account. Please try again.",
+      unexpectedError: "An unexpected error occurred.",
+      successTitle: "Your account is ready",
+      successDescription:
+        "Your account has been activated successfully. You can now sign in to KAIRO with your email and password.",
+      signIn: "Sign in",
+      backToLogin: "Back to sign in",
+      loading: "Loading invitation...",
+    },
+
     register: {
       eyebrow: "Get started with KAIRO",
       title: "Create your account",
@@ -374,6 +401,38 @@ const en = {
     reactivating: "Reactivating...",
     deactivateError: "Unable to deactivate team member.",
     reactivateError: "Unable to reactivate team member.",
+
+    inviteMember: "Invite",
+    inviteTitle: "Invite to KAIRO",
+    inviteDescription:
+      "Send an invitation so this team member can create a password and access KAIRO.",
+    inviteRecipient: "Team member",
+    inviteEmail: "Invitation email",
+    inviteEmailRequired:
+      "This team member does not have an email address. Add one using the edit option before sending an invitation.",
+    inviteInactive:
+      "Only active team members can be invited.",
+    inviteConfirm: "Send invitation",
+    inviting: "Sending invitation...",
+    inviteCancel: "Cancel",
+    inviteClose: "Close",
+    inviteAcceptedTitle: "Invitation processed",
+    inviteAcceptedDescription:
+      "The email provider accepted the invitation. This does not guarantee that it has reached the recipient's inbox.",
+    inviteUncertainTitle: "Delivery not confirmed",
+    inviteUncertainDescription:
+      "We could not confirm the invitation was sent. Check whether the team member received the email before trying again.",
+    inviteRejectedTitle: "Unable to send",
+    inviteRejectedDescription:
+      "The email provider rejected the invitation. Delivery has not been confirmed.",
+    inviteSessionExpired:
+      "Your session has expired. Please sign in again.",
+    inviteForbidden:
+      "Only the business owner can send invitations.",
+    inviteError:
+      "Unable to send the invitation. Please try again.",
+    inviteUnexpectedError:
+      "An unexpected error occurred while sending the invitation.",
   },
 
   services: {
