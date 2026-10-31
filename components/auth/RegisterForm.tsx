@@ -123,7 +123,11 @@ export default function RegisterForm() {
         return;
       }
 
-      router.push("/login?registered=1");
+      sessionStorage.setItem(
+  "kairo_registration_email",
+  form.email.trim()
+);
+router.push("/login?registered=1");
     } catch {
       setError("unexpectedError");
     } finally {

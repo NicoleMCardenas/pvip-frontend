@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -11,6 +11,18 @@ export default function LoginForm() {
   const registered = searchParams.get("registered") === "1";
 
   const [email, setEmail] = useState("");
+  useEffect(() => {
+  if (!registered) return;
+
+  const registrationEmail = sessionStorage.getItem(
+    "kairo_registration_email"
+  );
+
+  if (registrationEmail) {
+    setEmail(registrationEmail);
+    sessionStorage.removeItem("kairo_registration_email");
+  }
+}, [registered]);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
