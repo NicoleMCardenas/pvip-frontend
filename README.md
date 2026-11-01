@@ -107,13 +107,39 @@ The backend includes automated tests covering areas such as:
 - Revenue recovery
 - Staff invitations and concurrency scenarios
 
+
+## Public Demo
+
+KAIRO is publicly accessible at:
+
+https://kairo-ten-tau.vercel.app/login
+
+Visitors can select **Explorar demo** to access a fictional business environment without creating an account.
+
+The demo includes sample customer records, satisfaction data, customer intelligence indicators, retention cases, and revenue recovery information.
+
+Demo data is fictional and intended exclusively for product exploration. The backend enforces read-only access for the demo business to prevent changes to demonstration records.
+
+## Production Infrastructure
+
+The public demonstration uses:
+
+- **Vercel:** Next.js frontend hosting.
+- **Render:** FastAPI backend hosting.
+- **Supabase:** Managed PostgreSQL database.
+
+Local development continues to use Docker Compose.
+
 ## Current Development Status
 
-KAIRO is under active development and undergoing quality assurance and professional preparation.
+KAIRO's core application is implemented and publicly deployed as a professional portfolio demonstration.
+
+The project includes authentication, business operations, customer intelligence, retention management, revenue recovery, and bilingual navigation.
 
 Staff invitation workflows have been implemented and technically tested. Sending invitations to arbitrary external email addresses remains dependent on verified email-sender configuration, and the complete real-email activation flow has not yet been validated.
 
-Public deployment and production configuration are separate from the current local Docker environment.
+The public demo uses fictional data and does not represent a production service with real customer information.
+
 
 ## Project Focus
 
