@@ -11,25 +11,28 @@ export default function LoginForm() {
   const registered = searchParams.get("registered") === "1";
 
   const [email, setEmail] = useState("");
+
   useEffect(() => {
-  if (!registered) return;
+    if (!registered) return;
 
-  const registrationEmail = sessionStorage.getItem(
-    "kairo_registration_email"
-  );
+    const registrationEmail = sessionStorage.getItem(
+      "kairo_registration_email"
+    );
 
-  if (registrationEmail) {
-    setEmail(registrationEmail);
-    sessionStorage.removeItem("kairo_registration_email");
-  }
-}, [registered]);
+    if (registrationEmail) {
+      setEmail(registrationEmail);
+      sessionStorage.removeItem("kairo_registration_email");
+    }
+  }, [registered]);
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (loading) return;
+    if (loading || demoLoading) return;
 
     setError("");
     setLoading(true);
@@ -60,6 +63,40 @@ export default function LoginForm() {
       );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDemoAccess() {
+    if (loading || demoLoading) return;
+
+    setError("");
+    setDemoLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/demo", {
+        method: "POST",
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+
+        throw new Error(
+          data?.detail ||
+            "No fue posible acceder a KAIRO Demo."
+        );
+      }
+
+      router.replace("/");
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Ocurrió un error inesperado."
+      );
+    } finally {
+      setDemoLoading(false);
     }
   }
 
@@ -151,12 +188,36 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || demoLoading}
             className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Iniciando sesión..." : "Iniciar sesión"}
           </button>
         </form>
+
+        <div className="mt-6">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-800" />
+            <span className="text-xs text-slate-500">
+              O explora la plataforma
+            </span>
+            <div className="h-px flex-1 bg-slate-800" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDemoAccess}
+            disabled={loading || demoLoading}
+            className="w-full rounded-lg border border-slate-600 bg-slate-800/60 px-4 py-3 font-semibold text-white transition hover:border-slate-500 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {demoLoading ? "Preparando demo..." : "Explorar demo"}
+          </button>
+
+          <p className="mt-3 text-center text-xs leading-relaxed text-slate-400">
+            Explora KAIRO con datos ficticios, sin registrarte.
+            Acceso de solo lectura.
+          </p>
+        </div>
 
         <div className="mt-7 border-t border-slate-800 pt-6 text-center">
           <p className="text-sm text-slate-400">
